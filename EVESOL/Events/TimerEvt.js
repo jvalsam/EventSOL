@@ -28,12 +28,6 @@ var EVENTSOL;
                 evtAction.parent = this;
             }
         }
-        // event source code execution
-        TimerEvt.prototype.execution = function () {
-            // execution of defined callback source code
-            this._callbackFunc();
-            _super.prototype.execution.call(this);
-        };
         TimerEvt.prototype.checkStatusForRegistration = function () {
             _super.prototype.checkStatusForRegistration.call(this);
             if (this._index != 0) {
@@ -55,12 +49,19 @@ var EVENTSOL;
             this._status = this._initialStatus;
         };
         TimerEvt.prototype.turnEvtON = function () {
-            _super.prototype.turnEvtON.call(this);
-            this.registerEvtSys();
+            if (this._status !== EVENTSOL.EnvironmentStatus.ENV_ACTIVE) {
+                _super.prototype.turnEvtON.call(this);
+                this.checkStatusForRegistration();
+                this._evtActions[this._index].start();
+            }
         };
         TimerEvt.prototype.turnEvtOFF = function () {
-            _super.prototype.turnEvtOFF.call(this);
-            this.unregisterEvtSys();
+            if (this._status !== EVENTSOL.EnvironmentStatus.ENV_NOACTIVE) {
+                _super.prototype.turnEvtOFF.call(this);
+                this._evtActions[this._index].stop();
+                // reset
+                this._index = 0;
+            }
         };
         TimerEvt.prototype.actionFired = function (actionId, lastFired, actionExpired) {
             if (actionExpired === void 0) { actionExpired = false; }
@@ -105,6 +106,7 @@ var EVENTSOL;
                 if (lastFired) {
                     this.turnEvtOFF();
                 }
+                this.actionsAfterExecution();
             }
         };
         return TimerEvt;

@@ -67,6 +67,7 @@ var EVENTSOL;
         function EnvironmentEvt(name, status, type, repeatable, callback, groupName, evtsTurnOn, groupsTurnOn, evtsTurnOff, groupsTurnOff) {
             this._name = name;
             this._id = ++EVENTSOL.totalDefinedEvts;
+            this.groupName = groupName;
             this._initialStatus = status;
             this._status = status;
             this.type = type;
@@ -164,11 +165,29 @@ var EVENTSOL;
             this._callbackFunc();
             // keep data for exec
             ++this._totalFireEvt;
-            this._lastExecution = new EVENTSOL.Time();
+            this._lastExecution = new EVENTSOL.Time(EVENTSOL.Time.now());
             // notify reference events of this event that it is fired
             for (var evtName in this._citedBy) {
                 this._citedBy[evtName].evtReferenceFired(this);
             }
+        };
+        /**
+         * Care for activations/deactivations events and groups
+         */
+        EnvironmentEvt.prototype.actionsAfterExecution = function () {
+            var group = EVENTSOL.EnvEventSys.getInstance().getGroupEnvironmentEvts(this.groupName);
+            this._evtsTurnOn.forEach(function (evtName) {
+                group.getEnvironmentEvt(evtName).turnEvtON();
+            });
+            this._evtsTurnOff.forEach(function (evtName) {
+                group.getEnvironmentEvt(evtName).turnEvtOFF();
+            });
+            this._groupsTurnOn.forEach(function (groupName) {
+                EVENTSOL.EnvEventSys.getInstance().getGroupEnvironmentEvts(groupName).turnGroupOn();
+            });
+            this._groupsTurnOff.forEach(function (groupName) {
+                EVENTSOL.EnvEventSys.getInstance().getGroupEnvironmentEvts(groupName).turnGroupOff();
+            });
         };
         EnvironmentEvt.prototype.checkStatusForRegistration = function () {
             if (this._status === EnvironmentStatus.ENV_NOACTIVE) {
@@ -198,8 +217,8 @@ var EVENTSOL;
             this.assertEnvEvtExistence(evtName, "insert for " + index);
             this[index].push(evtName);
         };
-        EnvironmentEvt.prototype.insertEnvEvtTurnOn = function (evtName) { this.insertEnvEvtTurnHelper('_evtsTurnOnEvts', evtName); };
-        EnvironmentEvt.prototype.insertEnvEvtTurnOff = function (evtName) { this.insertEnvEvtTurnHelper('_evtsTurnOffEvts', evtName); };
+        EnvironmentEvt.prototype.insertEnvEvtTurnOn = function (evtName) { this.insertEnvEvtTurnHelper('_evtsTurnOn', evtName); };
+        EnvironmentEvt.prototype.insertEnvEvtTurnOff = function (evtName) { this.insertEnvEvtTurnHelper('_evtsTurnOff', evtName); };
         EnvironmentEvt.prototype.assertEnvGroupExistence = function (groupName, msgInfo) {
             if (!EVENTSOL.EnvEventSys.getInstance().containsGroupEnvironmentEvts(name)) {
                 throw new RangeError("Error: try to " + msgInfo + " not defined group called " + groupName + " in the system.");
@@ -209,20 +228,20 @@ var EVENTSOL;
             this.assertEnvGroupExistence(groupName, "insert for " + index);
             this[index].push(groupName);
         };
-        EnvironmentEvt.prototype.insertEnvGroupTurnOn = function (groupName) { this.insertEnvGroupTurnHelper('_evtsTurnOnGroups', groupName); };
-        EnvironmentEvt.prototype.insertEnvGroupTurnOff = function (groupName) { this.insertEnvGroupTurnHelper('_evtsTurnOffGroups', groupName); };
+        EnvironmentEvt.prototype.insertEnvGroupTurnOn = function (groupName) { this.insertEnvGroupTurnHelper('_groupsTurnOn', groupName); };
+        EnvironmentEvt.prototype.insertEnvGroupTurnOff = function (groupName) { this.insertEnvGroupTurnHelper('_groupsTurnOff', groupName); };
         EnvironmentEvt.prototype.removeEnvEvtTurnHelper = function (index, evtName) {
             this.assertEnvEvtExistence(evtName, "remove for " + index);
             this[index].splice(this[index].indexOf(evtName), 1);
         };
-        EnvironmentEvt.prototype.removeEnvEvtTurnOn = function (evtName) { this.removeEnvEvtTurnHelper('_evtsTurnOnEvts', evtName); };
-        EnvironmentEvt.prototype.removeEnvEvtTurnOff = function (evtName) { this.removeEnvEvtTurnHelper('_evtsTurnOffEvts', evtName); };
+        EnvironmentEvt.prototype.removeEnvEvtTurnOn = function (evtName) { this.removeEnvEvtTurnHelper('_evtsTurnOn', evtName); };
+        EnvironmentEvt.prototype.removeEnvEvtTurnOff = function (evtName) { this.removeEnvEvtTurnHelper('_evtsTurnOff', evtName); };
         EnvironmentEvt.prototype.removeEnvGroupTurnHelper = function (index, groupName) {
             this.assertEnvGroupExistence(groupName, "remove for " + index);
             this[index].splice(this[index].indexOf(groupName), 1);
         };
-        EnvironmentEvt.prototype.removeEnvGroupTurnOn = function (groupName) { this.removeEnvEvtTurnHelper('_evtsTurnOnGroups', groupName); };
-        EnvironmentEvt.prototype.removeEnvGroupTurnOff = function (groupName) { this.removeEnvEvtTurnHelper('_evtsTurnOffGroups', groupName); };
+        EnvironmentEvt.prototype.removeEnvGroupTurnOn = function (groupName) { this.removeEnvEvtTurnHelper('_groupsTurnOn', groupName); };
+        EnvironmentEvt.prototype.removeEnvGroupTurnOff = function (groupName) { this.removeEnvEvtTurnHelper('_groupsTurnOff', groupName); };
         // actions user can choose during runtime and/or in definition
         EnvironmentEvt.prototype.turnEvtON = function () {
             this._status = EnvironmentStatus.ENV_ACTIVE;
@@ -312,11 +331,19 @@ var EVENTSOL;
         };
         GroupEnvironmentEvts.prototype.turnGroupOn = function () {
             this._status = EnvironmentStatus.ENV_ACTIVE;
-            this.registerEventsSys();
+            for (var eventName in this._events) {
+                var envEvt = this._events[eventName];
+                if (envEvt.initialStatus === EnvironmentStatus.ENV_ACTIVE) {
+                    envEvt.turnEvtON();
+                }
+            }
         };
         GroupEnvironmentEvts.prototype.turnGroupOff = function () {
             this._status = EnvironmentStatus.ENV_NOACTIVE;
-            this.unregisterEventsSys();
+            for (var eventName in this._events) {
+                var envEvt = this._events[eventName];
+                envEvt.turnEvtOFF();
+            }
         };
         return GroupEnvironmentEvts;
     }());

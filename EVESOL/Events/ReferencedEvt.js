@@ -36,10 +36,6 @@ var EVENTSOL;
             this._times = times;
             this._totalTimes = 0;
         }
-        ReferencedEvt.prototype.execution = function () {
-            this._callbackFunc();
-            _super.prototype.execution.call(this);
-        };
         ReferencedEvt.prototype.registrationEvtSys = function (action) {
             // populate citation in the respective events
             var group = EVENTSOL.EnvEventSys.getInstance().getGroupEnvironmentEvts(this.groupName);
@@ -72,6 +68,7 @@ var EVENTSOL;
                     this.execution();
                     // executed once by default and then turns off
                     this.turnEvtOFF();
+                    this.actionsAfterExecution();
                 }
             }
         };
@@ -89,8 +86,10 @@ var EVENTSOL;
         };
         // populate event to the respective events
         ReferencedEvt.prototype.turnEvtON = function () {
-            _super.prototype.turnEvtON.call(this);
-            this.turnEvtHelper('insertCitation');
+            if (this._status !== EVENTSOL.EnvironmentStatus.ENV_ACTIVE) {
+                _super.prototype.turnEvtON.call(this);
+                this.turnEvtHelper('insertCitation');
+            }
         };
         // remove event data from the respective events
         ReferencedEvt.prototype.turnEvtOFF = function () {
@@ -109,6 +108,7 @@ var EVENTSOL;
         }
         return Reference;
     }());
+    EVENTSOL.Reference = Reference;
     var AggregateRef = (function (_super) {
         __extends(AggregateRef, _super);
         function AggregateRef(references) {
@@ -141,6 +141,7 @@ var EVENTSOL;
         };
         return AggregateRef;
     }(Reference));
+    EVENTSOL.AggregateRef = AggregateRef;
     var AndRef = (function (_super) {
         __extends(AndRef, _super);
         function AndRef(data) {

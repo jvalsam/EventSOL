@@ -22,7 +22,10 @@ var EVENTSOL;
         // insert actions remove actions
         // check if map is empty ,  etc
         TimeActions.prototype.insert = function (action) {
-            this._actionsMap[action.id] = action.fireAction;
+            if (typeof this._actionsMap === 'undefined') {
+                this._actionsMap = {};
+            }
+            this._actionsMap[action.id] = action;
         };
         TimeActions.prototype.remove = function (actionId) {
             if (!this._actionsMap[actionId])
@@ -37,12 +40,12 @@ var EVENTSOL;
     }());
     // Use for runtime
     var TimeAction = (function () {
-        function TimeAction(fireAction) {
+        function TimeAction(action) {
             this._timeoutID = 0;
-            this._fireAction = fireAction;
+            this._action = action;
         }
-        Object.defineProperty(TimeAction.prototype, "fireAction", {
-            get: function () { return this._fireAction; },
+        Object.defineProperty(TimeAction.prototype, "action", {
+            get: function () { return this._action; },
             enumerable: true,
             configurable: true
         });
@@ -80,7 +83,7 @@ var EVENTSOL;
                     this._timesMap[actionTime] = new TimeActions();
                     this._timesMap[actionTime].insert(action);
                     if (this._status === TimerStatusSys.ON) {
-                        this.setInterval(action.fireAction, actionTime);
+                        this._timesMap[actionTime].timeoutID = this.setInterval(this.actionsCheck, actionTime);
                     }
                 }
                 else {
@@ -88,15 +91,15 @@ var EVENTSOL;
                 }
             }
             else {
-                var runtimeAction = new TimeAction(action.fireAction);
-                runtimeAction.timeoutID = this.setInterval(action.fireAction, actionTime);
+                var runtimeAction = new TimeAction(action);
+                runtimeAction.timeoutID = this.setInterval(this.runtimeActionCheck, actionTime, action.id);
                 this._runtimeIntervalsMap[action.id] = runtimeAction;
             }
         };
         TimerSys.prototype.removeAction = function (action) {
             // actions that have been added runtime
             if (action.id in this._runtimeIntervalsMap) {
-                clearTimeout(this._runtimeIntervalsMap[action.id].timeoutID);
+                clearInterval(this._runtimeIntervalsMap[action.id].timeoutID);
                 delete this._runtimeIntervalsMap[action.id];
                 return true;
             }
@@ -106,7 +109,7 @@ var EVENTSOL;
             }
             var actionRemoved = this._timesMap[keyTime].remove(action.id);
             if (actionRemoved && this._timesMap[keyTime].isEmpty()) {
-                clearTimeout(this._timesMap[keyTime].timeoutID);
+                clearInterval(this._timesMap[keyTime].timeoutID);
                 delete this._timesMap[keyTime];
             }
             return actionRemoved;
@@ -124,18 +127,28 @@ var EVENTSOL;
             if (this._status === TimerStatusSys.ON) {
                 this._status = TimerStatusSys.OFF;
                 for (var keyTime in this._timesMap) {
-                    clearTimeout(this._timesMap[keyTime].timeoutID);
+                    clearInterval(this._timesMap[keyTime].timeoutID);
+                }
+                // clear runtime inserted actions, and remove them from runtime and register them in _timesMap
+                for (var actionId in this._runtimeIntervalsMap) {
+                    var action = this._runtimeIntervalsMap[actionId].action;
+                    // move action from runtime to registration time
+                    this.removeAction(action);
+                    this.insertAction(this._runtimeIntervalsMap[actionId].action, true);
                 }
             }
         };
         // callback for each of the intervals of timer
         TimerSys.prototype.actionsCheck = function (keyTime) {
             for (var actionId in this._timesMap[keyTime].actionsMap) {
-                this._timesMap[keyTime].actionsMap[actionId]();
+                this._timesMap[keyTime].actionsMap[actionId].fireAction();
             }
         };
-        TimerSys.prototype.setInterval = function (callback, keyTime) {
-            return setInterval(callback.bind(this, keyTime), keyTime);
+        TimerSys.prototype.runtimeActionCheck = function (actionId) {
+            this._runtimeIntervalsMap[actionId].action.fireAction();
+        };
+        TimerSys.prototype.setInterval = function (callback, keyTime, actionId) {
+            return setInterval(callback.bind(this, actionId ? actionId : keyTime), keyTime);
         };
         TimerSys._inst = new TimerSys();
         return TimerSys;

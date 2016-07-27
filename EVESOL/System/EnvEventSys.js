@@ -371,7 +371,7 @@ var EVENTSOL;
          *  Start: Helper methods for insertion of the turn ON/OFF events / groups in the end of fired event source code execution
          */
         EnvEventSys.addValidEventsForNotSelfReference = function (envEvt, events, turnType) {
-            for (var evtName in events) {
+            events.forEach(function (evtName) {
                 if (!EnvEventSys.getInstance().containsEnvironmentEvt(envEvt.groupName, evtName)) {
                     console.warn("Warning: EnvironmentEvt " + evtName + " is not defined in group " + envEvt.groupName + ".");
                 }
@@ -381,20 +381,20 @@ var EVENTSOL;
                 else {
                     envEvt['insertEnvEvt' + turnType](evtName);
                 }
-            }
+            });
         };
         EnvEventSys.addValidEventsForSelfReference = function (envEvt, events, turnType) {
-            for (var evtName in events) {
+            events.forEach(function (evtName) {
                 if (!EnvEventSys.getInstance().containsEnvironmentEvt(envEvt.groupName, evtName)) {
                     console.warn("Warning: EnvironmentEvt " + evtName + " is not defined in group " + envEvt.groupName + ".");
                 }
                 else {
                     envEvt['insertEnvEvt' + turnType](evtName);
                 }
-            }
+            });
         };
         EnvEventSys.addValidGroupsForNotSelfReference = function (envEvt, groups, turnType) {
-            for (var groupName in groups) {
+            groups.forEach(function (groupName) {
                 if (!EnvEventSys.getInstance().containsGroupEnvironmentEvts(groupName)) {
                     console.warn("Warning: EnvironmentGroup " + groupName + " is not defined in the event system.");
                 }
@@ -404,17 +404,17 @@ var EVENTSOL;
                 else {
                     envEvt['insertEnvGroup' + turnType](groupName);
                 }
-            }
+            });
         };
         EnvEventSys.addValidGroupsForSelfReference = function (envEvt, groups, turnType) {
-            for (var groupName in groups) {
+            groups.forEach(function (groupName) {
                 if (!EnvEventSys.getInstance().containsEnvironmentEvt(envEvt.groupName, groupName)) {
                     console.warn("Warning: EnvironmentGroup " + groupName + " is not defined in the event system.");
                 }
                 else {
                     envEvt['insertEnvGroup' + turnType](groupName);
                 }
-            }
+            });
         };
         /**
          *  Functions are provided to the user in order to add the Turn ON/OFF environments events/groups in the end of the fired source code execution
