@@ -1,17 +1,12 @@
-﻿namespace EVENTSOL {
-    export var totalDefinedEvts = 0;
-
-    export enum EnvironmentEvtStatus {
-        EVT_ACTIVE,
-        EVT_JNOACTIVE,
-        EVT_NOACTIVE
-    }
-
+﻿module EVENTSOL {
+    
     export class Time {
         private _value: number;
 
-        constructor() {
-            this._value = 0;
+        static DefaultCondTime: Time = new Time(500);
+
+        constructor(timeVal?: number) {
+            this._value = timeVal ? timeVal : 0;
         }
 
         get value(): number { return this._value; }
@@ -25,5 +20,6 @@
             }
             return Date.now();
         }
+        
     }
 }

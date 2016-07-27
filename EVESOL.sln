@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EVESOL", "EVESOL\EVESOL.csproj", "{A0CD2B82-4FCA-4776-815A-FFF7CBB8F1FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EVENTSOL", "EVESOL\EVENTSOL.csproj", "{A0CD2B82-4FCA-4776-815A-FFF7CBB8F1FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Tester\Tester.csproj", "{51D92BE8-D248-4043-8FCF-78277F5D2B59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A0CD2B82-4FCA-4776-815A-FFF7CBB8F1FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0CD2B82-4FCA-4776-815A-FFF7CBB8F1FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0CD2B82-4FCA-4776-815A-FFF7CBB8F1FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51D92BE8-D248-4043-8FCF-78277F5D2B59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51D92BE8-D248-4043-8FCF-78277F5D2B59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51D92BE8-D248-4043-8FCF-78277F5D2B59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51D92BE8-D248-4043-8FCF-78277F5D2B59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
