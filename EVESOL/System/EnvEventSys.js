@@ -333,15 +333,16 @@ var EVENTSOL;
          * Create references for EnvironmentEvents:
          *      IReferenceSimple, IReferencesTotalHappens, IReferencesOneOrMoreHappens
          */
-        EnvEventSys.CreateReferenceSimple = function (evtName, times) {
+        EnvEventSys.CreateReferenceSimple = function (evtName, times, operator) {
             if (times <= 0) {
                 console.error("Error: Negative defined value of times to happens referenced event with name " + evtName + ".");
                 return null;
             }
             return {
-                'type': EVENTSOL.ReferenceType.Simple,
+                'type': EVENTSOL.ReferenceType.Leaf,
                 'eventName': evtName,
-                'timesHappens': times
+                'timesHappens': times,
+                'leafType': operator
             };
         };
         EnvEventSys.CreateReferencesTotalHappens = function (references) {

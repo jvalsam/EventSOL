@@ -1,15 +1,24 @@
 declare module EVENTSOL {
     enum ReferenceType {
-        Simple = 0,
+        Leaf = 0,
         TotalHappens = 1,
         OneOrMoreHappens = 2,
+    }
+    enum OperatorTypeTimes {
+        Equal = 0,
+        NotEqual = 1,
+        Greater = 2,
+        GreaterOrEqual = 3,
+        Less = 4,
+        LessOrEqual = 5,
     }
     interface IReference {
         type: ReferenceType;
     }
-    interface IReferenceSimple extends IReference {
+    interface IReferenceLeaf extends IReference {
         eventName: string;
         timesHappens: number;
+        leafType: OperatorTypeTimes;
     }
     interface IReferencesTotalHappens extends IReference {
         references: Array<IReference>;
@@ -52,14 +61,31 @@ declare module EVENTSOL {
         actionsCheck(): boolean;
         markEvtReferenceFired(name: string): boolean;
     }
-    class SimpleRef extends Reference {
-        private _eventName;
-        private _times2Fire;
-        private _times;
-        constructor(data: IReferenceSimple);
+    abstract class LeafRef extends Reference {
+        protected _eventName: string;
+        protected _times2Fire: number;
+        protected _times: number;
+        constructor(data: IReferenceLeaf);
         getInvolvedEventsName(): Array<string>;
-        actionsCheck(): boolean;
         markEvtReferenceFired(name: string): boolean;
         reset(): void;
+    }
+    class EqualRef extends LeafRef {
+        actionsCheck(): boolean;
+    }
+    class NotEqualRef extends LeafRef {
+        actionsCheck(): boolean;
+    }
+    class GreaterRef extends LeafRef {
+        actionsCheck(): boolean;
+    }
+    class GreaterOrEqualRef extends LeafRef {
+        actionsCheck(): boolean;
+    }
+    class LessRef extends LeafRef {
+        actionsCheck(): boolean;
+    }
+    class LessOrEqualRef extends LeafRef {
+        actionsCheck(): boolean;
     }
 }

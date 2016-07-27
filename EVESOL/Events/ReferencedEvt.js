@@ -6,11 +6,20 @@ var __extends = (this && this.__extends) || function (d, b) {
 var EVENTSOL;
 (function (EVENTSOL) {
     (function (ReferenceType) {
-        ReferenceType[ReferenceType["Simple"] = 0] = "Simple";
+        ReferenceType[ReferenceType["Leaf"] = 0] = "Leaf";
         ReferenceType[ReferenceType["TotalHappens"] = 1] = "TotalHappens";
         ReferenceType[ReferenceType["OneOrMoreHappens"] = 2] = "OneOrMoreHappens";
     })(EVENTSOL.ReferenceType || (EVENTSOL.ReferenceType = {}));
     var ReferenceType = EVENTSOL.ReferenceType;
+    (function (OperatorTypeTimes) {
+        OperatorTypeTimes[OperatorTypeTimes["Equal"] = 0] = "Equal";
+        OperatorTypeTimes[OperatorTypeTimes["NotEqual"] = 1] = "NotEqual";
+        OperatorTypeTimes[OperatorTypeTimes["Greater"] = 2] = "Greater";
+        OperatorTypeTimes[OperatorTypeTimes["GreaterOrEqual"] = 3] = "GreaterOrEqual";
+        OperatorTypeTimes[OperatorTypeTimes["Less"] = 4] = "Less";
+        OperatorTypeTimes[OperatorTypeTimes["LessOrEqual"] = 5] = "LessOrEqual";
+    })(EVENTSOL.OperatorTypeTimes || (EVENTSOL.OperatorTypeTimes = {}));
+    var OperatorTypeTimes = EVENTSOL.OperatorTypeTimes;
     ////////////////////////////////////////////////////
     var ReferencedEvt = (function (_super) {
         __extends(ReferencedEvt, _super);
@@ -23,8 +32,27 @@ var EVENTSOL;
             if (groupsTurnOff === void 0) { groupsTurnOff = new Array(); }
             _super.call(this, name, status, type, isRepeatable, callback, groupName, evtsTurnOn, groupsTurnOn, evtsTurnOff, groupsTurnOff);
             switch (reference.type) {
-                case ReferenceType.Simple:
-                    this._references = new SimpleRef(reference);
+                case ReferenceType.Leaf:
+                    switch (reference.leafType) {
+                        case OperatorTypeTimes.Equal:
+                            this._references = new EqualRef(reference);
+                            break;
+                        case OperatorTypeTimes.NotEqual:
+                            this._references = new NotEqualRef(reference);
+                            break;
+                        case OperatorTypeTimes.Greater:
+                            this._references = new GreaterRef(reference);
+                            break;
+                        case OperatorTypeTimes.GreaterOrEqual:
+                            this._references = new GreaterOrEqualRef(reference);
+                            break;
+                        case OperatorTypeTimes.Less:
+                            this._references = new LessRef(reference);
+                            break;
+                        case OperatorTypeTimes.LessOrEqual:
+                            this._references = new LessOrEqualRef(reference);
+                            break;
+                    }
                     break;
                 case ReferenceType.TotalHappens:
                     this._references = new AndRef(reference);
@@ -70,6 +98,8 @@ var EVENTSOL;
                     this.turnEvtOFF();
                     this.actionsAfterExecution();
                 }
+                // reset reference which is true in order to count next creation of true ref
+                this._references.reset();
             }
         };
         ReferencedEvt.prototype.turnEvtHelper = function (turnFunc) {
@@ -113,10 +143,30 @@ var EVENTSOL;
         __extends(AggregateRef, _super);
         function AggregateRef(references) {
             _super.call(this);
+            this._values = new Array();
             references.forEach(function (ref) {
                 switch (ref.type) {
-                    case ReferenceType.Simple:
-                        this._values.push(new SimpleRef(ref));
+                    case ReferenceType.Leaf:
+                        switch (ref.leafType) {
+                            case OperatorTypeTimes.Equal:
+                                this._values.push(new EqualRef(ref));
+                                break;
+                            case OperatorTypeTimes.NotEqual:
+                                this._values.push(new NotEqualRef(ref));
+                                break;
+                            case OperatorTypeTimes.Greater:
+                                this._values.push(new GreaterRef(ref));
+                                break;
+                            case OperatorTypeTimes.GreaterOrEqual:
+                                this._values.push(new GreaterOrEqualRef(ref));
+                                break;
+                            case OperatorTypeTimes.Less:
+                                this._values.push(new LessRef(ref));
+                                break;
+                            case OperatorTypeTimes.LessOrEqual:
+                                this._values.push(new LessOrEqualRef(ref));
+                                break;
+                        }
                         break;
                     case ReferenceType.TotalHappens:
                         this._values.push(new AndRef(ref));
@@ -130,7 +180,7 @@ var EVENTSOL;
         AggregateRef.prototype.getInvolvedEventsName = function () {
             var eventsName = new Array();
             this._values.forEach(function (ref) {
-                eventsName.concat(ref.getInvolvedEventsName());
+                eventsName.push.apply(eventsName, ref.getInvolvedEventsName());
             });
             return eventsName;
         };
@@ -190,34 +240,97 @@ var EVENTSOL;
         return OrRef;
     }(AggregateRef));
     EVENTSOL.OrRef = OrRef;
-    var SimpleRef = (function (_super) {
-        __extends(SimpleRef, _super);
-        function SimpleRef(data) {
+    var LeafRef = (function (_super) {
+        __extends(LeafRef, _super);
+        function LeafRef(data) {
             _super.call(this);
             this._eventName = data.eventName;
             this._times2Fire = data.timesHappens;
             this._times = 0;
         }
-        SimpleRef.prototype.getInvolvedEventsName = function () {
+        LeafRef.prototype.getInvolvedEventsName = function () {
             var array = new Array();
             array.push(this._eventName);
             return array;
         };
-        SimpleRef.prototype.actionsCheck = function () {
-            return this._times === this._times2Fire;
-        };
-        SimpleRef.prototype.markEvtReferenceFired = function (name) {
+        LeafRef.prototype.markEvtReferenceFired = function (name) {
             if (this._eventName === name) {
                 ++this._times;
                 return true;
             }
             return false;
         };
-        SimpleRef.prototype.reset = function () {
+        LeafRef.prototype.reset = function () {
             this._times = 0;
         };
-        return SimpleRef;
+        return LeafRef;
     }(Reference));
-    EVENTSOL.SimpleRef = SimpleRef;
+    EVENTSOL.LeafRef = LeafRef;
+    var EqualRef = (function (_super) {
+        __extends(EqualRef, _super);
+        function EqualRef() {
+            _super.apply(this, arguments);
+        }
+        EqualRef.prototype.actionsCheck = function () {
+            return this._times === this._times2Fire;
+        };
+        return EqualRef;
+    }(LeafRef));
+    EVENTSOL.EqualRef = EqualRef;
+    var NotEqualRef = (function (_super) {
+        __extends(NotEqualRef, _super);
+        function NotEqualRef() {
+            _super.apply(this, arguments);
+        }
+        NotEqualRef.prototype.actionsCheck = function () {
+            return this._times !== this._times2Fire;
+        };
+        return NotEqualRef;
+    }(LeafRef));
+    EVENTSOL.NotEqualRef = NotEqualRef;
+    var GreaterRef = (function (_super) {
+        __extends(GreaterRef, _super);
+        function GreaterRef() {
+            _super.apply(this, arguments);
+        }
+        GreaterRef.prototype.actionsCheck = function () {
+            return this._times > this._times2Fire;
+        };
+        return GreaterRef;
+    }(LeafRef));
+    EVENTSOL.GreaterRef = GreaterRef;
+    var GreaterOrEqualRef = (function (_super) {
+        __extends(GreaterOrEqualRef, _super);
+        function GreaterOrEqualRef() {
+            _super.apply(this, arguments);
+        }
+        GreaterOrEqualRef.prototype.actionsCheck = function () {
+            return this._times >= this._times2Fire;
+        };
+        return GreaterOrEqualRef;
+    }(LeafRef));
+    EVENTSOL.GreaterOrEqualRef = GreaterOrEqualRef;
+    var LessRef = (function (_super) {
+        __extends(LessRef, _super);
+        function LessRef() {
+            _super.apply(this, arguments);
+        }
+        LessRef.prototype.actionsCheck = function () {
+            return this._times < this._times2Fire;
+        };
+        return LessRef;
+    }(LeafRef));
+    EVENTSOL.LessRef = LessRef;
+    var LessOrEqualRef = (function (_super) {
+        __extends(LessOrEqualRef, _super);
+        function LessOrEqualRef() {
+            _super.apply(this, arguments);
+        }
+        LessOrEqualRef.prototype.actionsCheck = function () {
+            return this._times <= this._times2Fire;
+        };
+        return LessOrEqualRef;
+    }(LeafRef));
+    EVENTSOL.LessOrEqualRef = LessOrEqualRef;
 })(EVENTSOL || (EVENTSOL = {}));
 //# sourceMappingURL=ReferencedEvt.js.map

@@ -87,7 +87,7 @@ declare module EVENTSOL {
          * Create references for EnvironmentEvents:
          *      IReferenceSimple, IReferencesTotalHappens, IReferencesOneOrMoreHappens
          */
-        static CreateReferenceSimple(evtName: string, times: number): IReferenceSimple;
+        static CreateReferenceSimple(evtName: string, times: number, operator: OperatorTypeTimes): IReferenceLeaf;
         static CreateReferencesTotalHappens(references: Array<IReference>): IReferencesTotalHappens;
         static CreateReferencesOneOrMoreHappens(references: Array<IReference>): IReferencesOneOrMoreHappens;
         /**

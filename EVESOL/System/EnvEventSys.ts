@@ -942,16 +942,17 @@
          *      IReferenceSimple, IReferencesTotalHappens, IReferencesOneOrMoreHappens
          */
 
-        public static CreateReferenceSimple(evtName: string, times: number): IReferenceSimple {
+        public static CreateReferenceSimple(evtName: string, times: number, operator: OperatorTypeTimes): IReferenceLeaf {
             if (times <= 0) {
                 console.error("Error: Negative defined value of times to happens referenced event with name " + evtName + ".");
                 return null;
             }
 
             return {
-                'type': ReferenceType.Simple,
+                'type': ReferenceType.Leaf,
                 'eventName': evtName,
-                'timesHappens': times
+                'timesHappens': times,
+                'leafType': operator
             };
         }
 

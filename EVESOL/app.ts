@@ -7,7 +7,7 @@ module EVENTSOL {
         span: HTMLElement;
         timerToken: number;
 
-        testing_Every_EveryFor_EveryWhile_WhenCondition_TurnOnOffs_OneGroup() {
+        testing_Every_EveryFor_EveryWhile_WhenCondition_ReferenceEvents_TurnOnOffs_OneGroup() {
             var counter = 1;
             var sprayingCounter = 0;
             var SmartGarden = { detectDisease: false };
@@ -44,6 +44,21 @@ module EVENTSOL {
                     ++counter;
                 },
                 EVENTSOL.Time.seconds(6)
+            );
+
+            EVENTSOL.EnvEventSys.CreateEventWhenReferenceHappens(
+                '3TimesFertilization5Watering',
+                'MyHomeEnvironment',
+                true,
+                EVENTSOL.EnvEventSys.CreateReferencesTotalHappens([
+                    EVENTSOL.EnvEventSys.CreateReferenceSimple('Watering', 5, EVENTSOL.OperatorTypeTimes.GreaterOrEqual),
+                    EVENTSOL.EnvEventSys.CreateReferenceSimple('Fertilization', 3, EVENTSOL.OperatorTypeTimes.GreaterOrEqual),
+                ]),
+                function () {
+                    var el = document.getElementById('content');
+                    el.innerHTML = el.innerHTML + "<br/>" + "Time of Exec: " + counter + " Process: DETECTS 3 TIMES FERTILIZATION 5 WATERING.";
+                },
+                2
             );
 
             EVENTSOL.EnvEventSys.CreateEventWhen(
@@ -134,6 +149,12 @@ module EVENTSOL {
                 'MyHomeEnvironment',
                 ['Fertilization']
             );
+
+            EVENTSOL.EnvEventSys.SetEventsTurnOnFromEnvironmentEvent(
+                '3TimesFertilization5Watering',
+                'MyHomeEnvironment',
+                ['3TimesFertilization5Watering']
+            );
         }
 
         testing_After_Recursive_Self_TurnOn() {
@@ -156,9 +177,75 @@ module EVENTSOL {
             EVENTSOL.EnvEventSys.SetEventsTurnOnFromEnvironmentEvent(SpecificDay, group, [SpecificDay]);
         }
 
+        testing_When_Every() {
+            var group = 'GardenCare';
+            var evtWhenStopRains = 'whenStopRainsWatering';
+            var evtHelperSO1 = 'helperSO1';
+            var evtHelperSO2 = 'helperSO2';
+            var evtHelperSO3 = 'helperSO3';
+
+            // virtual smart object garden
+            var SmartGarden = { stopRains: false };
+
+            EVENTSOL.EnvEventSys.CreateGroup(group);
+
+            EVENTSOL.EnvEventSys.CreateEventWhenEveryWhile(
+                evtWhenStopRains,
+                group,
+                true,
+                function () { return SmartGarden.stopRains === true; },
+                function () {
+                    var el = document.getElementById('content');
+                    el.innerHTML = el.innerHTML + "<br/>" + " Process: Watering...";
+                },
+                EVENTSOL.Time.seconds(2),
+                function () { return SmartGarden.stopRains === true; }
+            );
+
+            EVENTSOL.EnvEventSys.CreateEventAfter(
+                evtHelperSO1,
+                group,
+                true,
+                function () {
+                    var el = document.getElementById('content');
+                    el.innerHTML = el.innerHTML + "<br/>" + " --> SmartGarden detects that stoped rain";
+                    SmartGarden.stopRains = true;
+                },
+                EVENTSOL.Time.seconds(10)
+            );
+
+            EVENTSOL.EnvEventSys.CreateEventAfter(
+                evtHelperSO2,
+                group,
+                false,
+                function () {
+                    var el = document.getElementById('content');
+                    el.innerHTML = el.innerHTML + "<br/>" + " ------> SmartGarden detects that rains again";
+                    SmartGarden.stopRains = false;
+                },
+                EVENTSOL.Time.seconds(10)
+            );
+
+            EVENTSOL.EnvEventSys.CreateEventAfter(
+                evtHelperSO3,
+                group,
+                false,
+                function () {
+                    /* DO NOTHING: in the end of execution activate watering event */
+                },
+                EVENTSOL.Time.seconds(1)
+            );
+
+            EVENTSOL.EnvEventSys.SetEventsTurnOnFromEnvironmentEvent(evtHelperSO1, group, [evtHelperSO2]);
+            EVENTSOL.EnvEventSys.SetEventsTurnOnFromEnvironmentEvent(evtHelperSO2, group, [evtHelperSO3]);
+            EVENTSOL.EnvEventSys.SetEventsTurnOnFromEnvironmentEvent(evtHelperSO3, group, [evtHelperSO1, evtWhenStopRains]);
+
+        }
+
         constructor(element: HTMLElement) {
-            this.testing_Every_EveryFor_EveryWhile_WhenCondition_TurnOnOffs_OneGroup();
-            //this.testing_After_Recursive_Self_TurnOn();
+            // this.testing_Every_EveryFor_EveryWhile_WhenCondition_ReferenceEvents_TurnOnOffs_OneGroup();
+            // this.testing_After_Recursive_Self_TurnOn();
+            this.testing_When_Every();
         }
 
         start() {

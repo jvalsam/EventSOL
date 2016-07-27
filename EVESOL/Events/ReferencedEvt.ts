@@ -1,18 +1,28 @@
 ﻿module EVENTSOL {
 
     export enum ReferenceType {
-        Simple,
+        Leaf,
         TotalHappens,
         OneOrMoreHappens
+    }
+
+    export enum OperatorTypeTimes {
+        Equal,
+        NotEqual,
+        Greater,
+        GreaterOrEqual,
+        Less,
+        LessOrEqual
     }
 
     export interface IReference {
         type: ReferenceType
     }
 
-    export interface IReferenceSimple extends IReference {
+    export interface IReferenceLeaf extends IReference {
         eventName: string,
-        timesHappens: number
+        timesHappens: number,
+        leafType: OperatorTypeTimes
     }
 
     export interface IReferencesTotalHappens extends IReference {
@@ -58,8 +68,27 @@
             );
 
             switch (reference.type) {
-                case ReferenceType.Simple:
-                    this._references = new SimpleRef(<IReferenceSimple>reference);
+                case ReferenceType.Leaf:
+                    switch ((<IReferenceLeaf>reference).leafType) {
+                        case OperatorTypeTimes.Equal:
+                            this._references = new EqualRef(<IReferenceLeaf>reference);
+                            break;
+                        case OperatorTypeTimes.NotEqual:
+                            this._references = new NotEqualRef(<IReferenceLeaf>reference);
+                            break;
+                        case OperatorTypeTimes.Greater:
+                            this._references = new GreaterRef(<IReferenceLeaf>reference);
+                            break;
+                        case OperatorTypeTimes.GreaterOrEqual:
+                            this._references = new GreaterOrEqualRef(<IReferenceLeaf>reference);
+                            break;
+                        case OperatorTypeTimes.Less:
+                            this._references = new LessRef(<IReferenceLeaf>reference);
+                            break;
+                        case OperatorTypeTimes.LessOrEqual:
+                            this._references = new LessOrEqualRef(<IReferenceLeaf>reference);
+                            break;
+                    }
                     break;
                 case ReferenceType.TotalHappens:
                     this._references = new AndRef(<IReferencesTotalHappens>reference);
@@ -119,6 +148,9 @@
 
                     this.actionsAfterExecution();
                 }
+
+                // reset reference which is true in order to count next creation of true ref
+                this._references.reset();
             }
         }
 
@@ -171,10 +203,30 @@
 
         constructor(references: Array<IReference>) {
             super();
+            this._values = new Array<Reference>();
             references.forEach(function (ref: IReference) {
                 switch (ref.type) {
-                    case ReferenceType.Simple:
-                        this._values.push(new SimpleRef(<IReferenceSimple>ref));
+                    case ReferenceType.Leaf:
+                        switch ((<IReferenceLeaf>ref).leafType) {
+                            case OperatorTypeTimes.Equal:
+                                this._values.push(new EqualRef(<IReferenceLeaf>ref));
+                                break;
+                            case OperatorTypeTimes.NotEqual:
+                                this._values.push(new NotEqualRef(<IReferenceLeaf>ref));
+                                break;
+                            case OperatorTypeTimes.Greater:
+                                this._values.push(new GreaterRef(<IReferenceLeaf>ref));
+                                break;
+                            case OperatorTypeTimes.GreaterOrEqual:
+                                this._values.push(new GreaterOrEqualRef(<IReferenceLeaf>ref));
+                                break;
+                            case OperatorTypeTimes.Less:
+                                this._values.push(new LessRef(<IReferenceLeaf>ref));
+                                break;
+                            case OperatorTypeTimes.LessOrEqual:
+                                this._values.push(new LessOrEqualRef(<IReferenceLeaf>ref));
+                                break;
+                        }
                         break;
                     case ReferenceType.TotalHappens:
                         this._values.push(new AndRef(<IReferencesTotalHappens>ref));
@@ -189,7 +241,7 @@
         getInvolvedEventsName(): Array<string> {
             var eventsName: Array<string> = new Array<string>();
             this._values.forEach(function (ref: Reference) {
-                eventsName.concat(ref.getInvolvedEventsName());
+                eventsName.push.apply(eventsName, ref.getInvolvedEventsName());
             });
             return eventsName;
         }
@@ -252,12 +304,12 @@
         }
     }
 
-    export class SimpleRef extends Reference {
-        private _eventName: string;
-        private _times2Fire: number;
-        private _times: number;
+    export abstract class LeafRef extends Reference {
+        protected _eventName: string;
+        protected _times2Fire: number;
+        protected _times: number;
 
-        constructor(data: IReferenceSimple) {
+        constructor(data: IReferenceLeaf) {
             super();
             this._eventName = data.eventName;
             this._times2Fire = data.timesHappens;
@@ -270,9 +322,7 @@
             return array;
         }
 
-        actionsCheck(): boolean {
-            return this._times === this._times2Fire;
-        }
+        
 
         markEvtReferenceFired(name: string): boolean {
             if (this._eventName === name) {
@@ -287,4 +337,39 @@
         }
     }
 
+    export class EqualRef extends LeafRef {
+        actionsCheck(): boolean {
+            return this._times === this._times2Fire;
+        }
+    }
+
+    export class NotEqualRef extends LeafRef {
+        actionsCheck(): boolean {
+            return this._times !== this._times2Fire;
+        }
+    }
+
+    export class GreaterRef extends LeafRef {
+        actionsCheck(): boolean {
+            return this._times > this._times2Fire;
+        }
+    }
+
+    export class GreaterOrEqualRef extends LeafRef {
+        actionsCheck(): boolean {
+            return this._times >= this._times2Fire;
+        }
+    }
+
+    export class LessRef extends LeafRef {
+        actionsCheck(): boolean {
+            return this._times < this._times2Fire;
+        }
+    }
+
+    export class LessOrEqualRef extends LeafRef {
+        actionsCheck(): boolean {
+            return this._times <= this._times2Fire;
+        }
+    }
 }
