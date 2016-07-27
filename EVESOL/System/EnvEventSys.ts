@@ -229,7 +229,7 @@
          *
          **/
 
-        public static CreateGroup(name: string, active: boolean) {
+        public static CreateGroup(name: string, active: boolean=true) {
             var group: GroupEnvironmentEvts = new GroupEnvironmentEvts(name, active ? EnvironmentStatus.ENV_ACTIVE : EnvironmentStatus.ENV_NOACTIVE);
             EnvEventSys.getInstance().addEnvironmentGroup(group);
         }
@@ -249,10 +249,10 @@
             groupName: string,
             active: boolean,
             callback: Function,
-            freqTime: Time
+            freqTime: number | Time
         ) {
             var evtActions = new Array();
-            evtActions.push(new TimerAction(freqTime, true));
+            evtActions.push(new TimerAction(typeof freqTime === 'number' ? new Time(freqTime) : freqTime, true));
             
             var timerEvt: TimerEvt = new TimerEvt(
                 name,
@@ -272,11 +272,16 @@
             groupName: string,
             active: boolean,
             callback: Function,
-            freqTime: Time,
-            time: Time
+            freqTime: number | Time,
+            time: number | Time
         ) {
             var evtActions = new Array();
-            evtActions.push(new TimerActionExpiresSpecificTime(freqTime, time));
+            evtActions.push(
+                new TimerActionExpiresSpecificTime(
+                    typeof freqTime === 'number' ? new Time(freqTime) : freqTime,
+                    typeof time === 'number' ? new Time(time) : time
+                )
+            );
 
             var timerEvt: TimerEvt = new TimerEvt(
                 name,
@@ -296,11 +301,11 @@
             groupName: string,
             active: boolean,
             callback: Function,
-            freqTime: Time,
+            freqTime: number | Time,
             condition: Function
         ) {
             var evtActions = new Array();
-            evtActions.push(new TimerActionCondition(freqTime, condition));
+            evtActions.push(new TimerActionCondition(typeof freqTime === 'number' ? new Time(freqTime) : freqTime, condition));
 
             var timerEvt: TimerEvt = new TimerEvt(
                 name,
@@ -324,10 +329,10 @@
             groupName: string,
             active: boolean,
             callback: Function,
-            time: Time
+            time: number | Time
         ) {
             var evtActions = new Array();
-            evtActions.push(new TimerActionSpecificTime(time));
+            evtActions.push(new TimerActionSpecificTime(typeof time === 'number' ? new Time(time) : time));
 
             var timerEvt: TimerEvt = new TimerEvt(
                 name,
@@ -347,10 +352,10 @@
             groupName: string,
             active: boolean,
             callback: Function,
-            time: Time
+            time: number | Time
         ) {
             var evtActions = new Array();
-            evtActions.push(new TimerAction(time, false));
+            evtActions.push(new TimerAction(typeof time === 'number' ? new Time(time) : time, false));
 
             var timerEvt: TimerEvt = new TimerEvt(
                 name,
@@ -378,10 +383,10 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            freqTime: Time
+            freqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtCondition(freqTime, condition));
+            evtActions.push(new EvtCondition(typeof freqTime === 'number' ? new Time(freqTime) : freqTime, condition));
 
             return new TimerEvt(
                 name,
@@ -400,7 +405,7 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            freqTime: Time = Time.DefaultCondTime
+            freqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
                 EnvEventSys.CreateNewEventWhenCondition(name, groupName, active, condition, callback, freqTime)
@@ -413,11 +418,17 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            time: Time,
-            freqTime: Time
+            time: number | Time,
+            freqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtConditionTimer(freqTime, condition, time));
+            evtActions.push(
+                new EvtConditionTimer(
+                    typeof freqTime === 'number' ? new Time(freqTime) : freqTime,
+                    condition,
+                    typeof time === 'number' ? new Time(time) : time
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -436,8 +447,8 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            time: Time,
-            freqTime: Time = Time.DefaultCondTime
+            time: number | Time,
+            freqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
                 EnvEventSys.CreateNewEventWhenConditionHappensFor(name, groupName, active, condition, callback, time, freqTime)
@@ -451,10 +462,16 @@
             condition: Function,
             callback: Function,
             times: number,
-            freqTime: Time
+            freqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtConditionTimesHappens(freqTime, condition, times));
+            evtActions.push(
+                new EvtConditionTimesHappens(
+                    typeof freqTime === 'number' ? new Time(freqTime) : freqTime,
+                    condition,
+                    times
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -474,10 +491,18 @@
             condition: Function,
             callback: Function,
             times: number,
-            freqTime: Time = Time.DefaultCondTime
+            freqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
-                EnvEventSys.CreateNewEventWhenConditionHappensTimes(name, groupName, active, condition, callback, times, freqTime)
+                EnvEventSys.CreateNewEventWhenConditionHappensTimes(
+                    name,
+                    groupName,
+                    active,
+                    condition,
+                    callback,
+                    times,
+                    freqTime
+                )
             );
         }
 
@@ -487,12 +512,22 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            everyTime: Time,
-            condfreqTime: Time
+            everyTime: number | Time,
+            condfreqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtCondition(condfreqTime, condition));
-            evtActions.push(new TimerAction(everyTime, true));
+            evtActions.push(
+                new EvtCondition(
+                    typeof condfreqTime === 'number' ? new Time(condfreqTime) : condfreqTime,
+                    condition
+                )
+            );
+            evtActions.push(
+                new TimerAction(
+                    typeof everyTime === 'number' ? new Time(everyTime) : everyTime,
+                    true
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -511,11 +546,19 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            everyTime: Time,
-            condfreqTime: Time = Time.DefaultCondTime
+            everyTime: number | Time,
+            condfreqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
-                EnvEventSys.CreateNewEventWhenConditionEvery(name, groupName, active, condition, callback, everyTime, condfreqTime)
+                EnvEventSys.CreateNewEventWhenConditionEvery(
+                    name,
+                    groupName,
+                    active,
+                    condition,
+                    callback,
+                    everyTime,
+                    condfreqTime
+                )
             );
         }
 
@@ -525,13 +568,23 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            everyTime: Time,
-            specificTime: Time,
-            condfreqTime: Time
+            everyTime: number | Time,
+            specificTime: number | Time,
+            condfreqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtCondition(condfreqTime, condition));
-            evtActions.push(new TimerActionExpiresSpecificTime(everyTime, specificTime));
+            evtActions.push(
+                new EvtCondition(
+                    typeof condfreqTime === 'number' ? new Time(condfreqTime) : condfreqTime,
+                    condition
+                )
+            );
+            evtActions.push(
+                new TimerActionExpiresSpecificTime(
+                    typeof everyTime === 'number' ? new Time(everyTime) : everyTime,
+                    typeof specificTime === 'number' ? new Time(specificTime) : specificTime
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -550,12 +603,21 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            everyTime: Time,
-            specificTime: Time,
-            condfreqTime: Time = Time.DefaultCondTime
+            everyTime: number | Time,
+            specificTime: number | Time,
+            condfreqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
-                EnvEventSys.CreateNewEventWhenEveryFor(name, groupName, active, condition, callback, everyTime, specificTime, condfreqTime)
+                EnvEventSys.CreateNewEventWhenEveryFor(
+                    name,
+                    groupName,
+                    active,
+                    condition,
+                    callback,
+                    everyTime,
+                    specificTime,
+                    condfreqTime
+                )
             );
         }
 
@@ -565,13 +627,23 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            everyTime: Time,
+            everyTime: number | Time,
             everyCondition: Function,
-            condfreqTime: Time
+            condfreqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtCondition(condfreqTime, condition));
-            evtActions.push(new TimerActionCondition(everyTime, everyCondition));
+            evtActions.push(
+                new EvtCondition(
+                    typeof condfreqTime === 'number' ? new Time(condfreqTime) : condfreqTime,
+                    condition
+                )
+            );
+            evtActions.push(
+                new TimerActionCondition(
+                    typeof everyTime === 'number' ? new Time(everyTime) : everyTime,
+                    everyCondition
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -590,12 +662,21 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            everyTime: Time,
+            everyTime: number | Time,
             everyCondition: Function,
-            condfreqTime: Time = Time.DefaultCondTime
+            condfreqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
-                EnvEventSys.CreateNewEventWhenEveryWhile(name, groupName, active, condition, callback, everyTime, everyCondition, condfreqTime)
+                EnvEventSys.CreateNewEventWhenEveryWhile(
+                    name,
+                    groupName,
+                    active,
+                    condition,
+                    callback,
+                    everyTime,
+                    everyCondition,
+                    condfreqTime
+                )
             );
         }
 
@@ -605,12 +686,22 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            waitTime: Time,
-            condfreqTime: Time
+            waitTime: number | Time,
+            condfreqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtCondition(condfreqTime, condition));
-            evtActions.push(new TimerAction(waitTime, false));
+            evtActions.push(
+                new EvtCondition(
+                    typeof condfreqTime === 'number' ? new Time(condfreqTime) : condfreqTime,
+                    condition
+                )
+            );
+            evtActions.push(
+                new TimerAction(
+                    typeof waitTime === 'number' ? new Time(waitTime) : waitTime,
+                    false
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -629,11 +720,19 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            waitTime: Time,
-            condfreqTime: Time = Time.DefaultCondTime
+            waitTime: number | Time,
+            condfreqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
-                EnvEventSys.CreateNewEventWhenWait(name, groupName, active, condition, callback, waitTime, condfreqTime)
+                EnvEventSys.CreateNewEventWhenWait(
+                    name,
+                    groupName,
+                    active,
+                    condition,
+                    callback,
+                    waitTime,
+                    condfreqTime
+                )
             );
         }
 
@@ -643,14 +742,29 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            waitTime: Time,
-            everyTime: Time,
-            condfreqTime: Time
+            waitTime: number | Time,
+            everyTime: number | Time,
+            condfreqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtCondition(condfreqTime, condition));
-            evtActions.push(new TimerAction(waitTime, false));
-            evtActions.push(new TimerAction(everyTime, true));
+            evtActions.push(
+                new EvtCondition(
+                    typeof condfreqTime === 'number' ? new Time(condfreqTime) : condfreqTime,
+                    condition
+                )
+            );
+            evtActions.push(
+                new TimerAction(
+                    typeof waitTime === 'number' ? new Time(waitTime) : waitTime,
+                    false
+                )
+            );
+            evtActions.push(
+                new TimerAction(
+                    typeof everyTime === 'number' ? new Time(everyTime) : everyTime,
+                    true
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -669,12 +783,21 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            waitTime: Time,
-            everyTime: Time,
-            condfreqTime: Time = Time.DefaultCondTime
+            waitTime: number | Time,
+            everyTime: number | Time,
+            condfreqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
-                EnvEventSys.CreateNewEventWhenWaitEvery(name, groupName, active, condition, callback, waitTime, everyTime, condfreqTime)
+                EnvEventSys.CreateNewEventWhenWaitEvery(
+                    name,
+                    groupName,
+                    active,
+                    condition,
+                    callback,
+                    waitTime,
+                    everyTime,
+                    condfreqTime
+                )
             );
         }
 
@@ -684,15 +807,30 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            waitTime: Time,
-            everyTime: Time,
-            everySpecificTime: Time,
-            condfreqTime: Time
+            waitTime: number | Time,
+            everyTime: number | Time,
+            everySpecificTime: number | Time,
+            condfreqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtCondition(condfreqTime, condition));
-            evtActions.push(new TimerAction(waitTime, false));
-            evtActions.push(new TimerActionExpiresSpecificTime(everyTime, everySpecificTime));
+            evtActions.push(
+                new EvtCondition(
+                    typeof condfreqTime === 'number' ? new Time(condfreqTime) : condfreqTime,
+                    condition
+                )
+            );
+            evtActions.push(
+                new TimerAction(
+                    typeof waitTime === 'number' ? new Time(waitTime) : waitTime,
+                    false
+                )
+            );
+            evtActions.push(
+                new TimerActionExpiresSpecificTime(
+                    typeof everyTime === 'number' ? new Time(everyTime) : everyTime,
+                    typeof everySpecificTime === 'number' ? new Time(everySpecificTime) : everySpecificTime
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -711,13 +849,23 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            waitTime: Time,
-            everyTime: Time,
-            everySpecificTime: Time,
-            condfreqTime: Time = Time.DefaultCondTime
+            waitTime: number | Time,
+            everyTime: number | Time,
+            everySpecificTime: number | Time,
+            condfreqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
-                EnvEventSys.CreateNewEventWhenWaitEveryFor(name, groupName, active, condition, callback, waitTime, everyTime, everySpecificTime, condfreqTime)
+                EnvEventSys.CreateNewEventWhenWaitEveryFor(
+                    name,
+                    groupName,
+                    active,
+                    condition,
+                    callback,
+                    waitTime,
+                    everyTime,
+                    everySpecificTime,
+                    condfreqTime
+                )
             );
         }
 
@@ -727,15 +875,30 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            waitTime: Time,
-            everyTime: Time,
+            waitTime: number | Time,
+            everyTime: number | Time,
             everyCondition: Function,
-            condfreqTime: Time
+            condfreqTime: number | Time
         ): TimerEvt {
             var evtActions = new Array();
-            evtActions.push(new EvtCondition(condfreqTime, condition));
-            evtActions.push(new TimerAction(waitTime, false));
-            evtActions.push(new TimerActionCondition(everyTime, everyCondition));
+            evtActions.push(
+                new EvtCondition(
+                    typeof condfreqTime === 'number' ? new Time(condfreqTime) : condfreqTime,
+                    condition
+                )
+            );
+            evtActions.push(
+                new TimerAction(
+                    typeof waitTime === 'number' ? new Time(waitTime) : waitTime,
+                    false
+                )
+            );
+            evtActions.push(
+                new TimerActionCondition(
+                    typeof everyTime === 'number' ? new Time(everyTime) : everyTime,
+                    everyCondition
+                )
+            );
 
             return new TimerEvt(
                 name,
@@ -754,13 +917,23 @@
             active: boolean,
             condition: Function,
             callback: Function,
-            waitTime: Time,
-            everyTime: Time,
+            waitTime: number | Time,
+            everyTime: number | Time,
             everyCondition: Function,
-            condfreqTime: Time = Time.DefaultCondTime
+            condfreqTime: number | Time = Time.DefaultCondTime
         ) {
             EnvEventSys.getInstance().addEnvironmentEvt(
-                EnvEventSys.CreateNewEventWhenWaitEveryWhile(name, groupName, active, condition, callback, waitTime, everyTime, everyCondition, condfreqTime)
+                EnvEventSys.CreateNewEventWhenWaitEveryWhile(
+                    name,
+                    groupName,
+                    active,
+                    condition,
+                    callback,
+                    waitTime,
+                    everyTime,
+                    everyCondition,
+                    condfreqTime
+                )
             );
         }
 

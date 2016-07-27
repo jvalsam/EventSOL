@@ -42,21 +42,21 @@ declare module EVENTSOL {
          * static functions exported used for EnvironmentEvts and groups
          *
          **/
-        static CreateGroup(name: string, active: boolean): void;
+        static CreateGroup(name: string, active?: boolean): void;
         static CreateGroups(groups: {
             [name: string]: boolean;
         }): void;
         /**
          *  Environment Events (Repeatable): EVERY, EVERY_FOR and EVERY_WHILE
          */
-        static CreateEventEvery(name: string, groupName: string, active: boolean, callback: Function, freqTime: Time): void;
-        static CreateEventEveryFor(name: string, groupName: string, active: boolean, callback: Function, freqTime: Time, time: Time): void;
-        static CreateEventEveryWhile(name: string, groupName: string, active: boolean, callback: Function, freqTime: Time, condition: Function): void;
+        static CreateEventEvery(name: string, groupName: string, active: boolean, callback: Function, freqTime: number | Time): void;
+        static CreateEventEveryFor(name: string, groupName: string, active: boolean, callback: Function, freqTime: number | Time, time: number | Time): void;
+        static CreateEventEveryWhile(name: string, groupName: string, active: boolean, callback: Function, freqTime: number | Time, condition: Function): void;
         /**
          *  Environment Events (Not repeatable): ON, AFTER
          */
-        static CreateEventOn(name: string, groupName: string, active: boolean, callback: Function, time: Time): void;
-        static CreateEventAfter(name: string, groupName: string, active: boolean, callback: Function, time: Time): void;
+        static CreateEventOn(name: string, groupName: string, active: boolean, callback: Function, time: number | Time): void;
+        static CreateEventAfter(name: string, groupName: string, active: boolean, callback: Function, time: number | Time): void;
         /**
          *  Environment Events (When_Condition):
          *      WHEN_CONDITION, WHEN_CONDITION_FOR, WHEN_CONDITION_HAPPENS, WHEN_CONDITION_EVERY,
@@ -64,25 +64,25 @@ declare module EVENTSOL {
          *      WHEN_CONDITION_WAIT_EVERY, WHEN_CONDITION_WAIT_EVERY_FOR, WHEN_CONDITION_WAIT_EVERY_WHILE
          */
         private static CreateNewEventWhenCondition(name, groupName, active, condition, callback, freqTime);
-        static CreateEventWhen(name: string, groupName: string, active: boolean, condition: Function, callback: Function, freqTime?: Time): void;
+        static CreateEventWhen(name: string, groupName: string, active: boolean, condition: Function, callback: Function, freqTime?: number | Time): void;
         private static CreateNewEventWhenConditionHappensFor(name, groupName, active, condition, callback, time, freqTime);
-        static CreateEventWhenConditionHappensFor(name: string, groupName: string, active: boolean, condition: Function, callback: Function, time: Time, freqTime?: Time): void;
+        static CreateEventWhenConditionHappensFor(name: string, groupName: string, active: boolean, condition: Function, callback: Function, time: number | Time, freqTime?: number | Time): void;
         private static CreateNewEventWhenConditionHappensTimes(name, groupName, active, condition, callback, times, freqTime);
-        static CreateEventWhenConditionHappensTimes(name: string, groupName: string, active: boolean, condition: Function, callback: Function, times: number, freqTime?: Time): void;
+        static CreateEventWhenConditionHappensTimes(name: string, groupName: string, active: boolean, condition: Function, callback: Function, times: number, freqTime?: number | Time): void;
         private static CreateNewEventWhenConditionEvery(name, groupName, active, condition, callback, everyTime, condfreqTime);
-        static CreateEventWhenEvery(name: string, groupName: string, active: boolean, condition: Function, callback: Function, everyTime: Time, condfreqTime?: Time): void;
+        static CreateEventWhenEvery(name: string, groupName: string, active: boolean, condition: Function, callback: Function, everyTime: number | Time, condfreqTime?: number | Time): void;
         private static CreateNewEventWhenEveryFor(name, groupName, active, condition, callback, everyTime, specificTime, condfreqTime);
-        static CreateEventWhenEveryFor(name: string, groupName: string, active: boolean, condition: Function, callback: Function, everyTime: Time, specificTime: Time, condfreqTime?: Time): void;
+        static CreateEventWhenEveryFor(name: string, groupName: string, active: boolean, condition: Function, callback: Function, everyTime: number | Time, specificTime: number | Time, condfreqTime?: number | Time): void;
         private static CreateNewEventWhenEveryWhile(name, groupName, active, condition, callback, everyTime, everyCondition, condfreqTime);
-        static CreateEventWhenEveryWhile(name: string, groupName: string, active: boolean, condition: Function, callback: Function, everyTime: Time, everyCondition: Function, condfreqTime?: Time): void;
+        static CreateEventWhenEveryWhile(name: string, groupName: string, active: boolean, condition: Function, callback: Function, everyTime: number | Time, everyCondition: Function, condfreqTime?: number | Time): void;
         private static CreateNewEventWhenWait(name, groupName, active, condition, callback, waitTime, condfreqTime);
-        static CreateEventWhenWait(name: string, groupName: string, active: boolean, condition: Function, callback: Function, waitTime: Time, condfreqTime?: Time): void;
+        static CreateEventWhenWait(name: string, groupName: string, active: boolean, condition: Function, callback: Function, waitTime: number | Time, condfreqTime?: number | Time): void;
         private static CreateNewEventWhenWaitEvery(name, groupName, active, condition, callback, waitTime, everyTime, condfreqTime);
-        static CreateEventWhenWaitEvery(name: string, groupName: string, active: boolean, condition: Function, callback: Function, waitTime: Time, everyTime: Time, condfreqTime?: Time): void;
+        static CreateEventWhenWaitEvery(name: string, groupName: string, active: boolean, condition: Function, callback: Function, waitTime: number | Time, everyTime: number | Time, condfreqTime?: number | Time): void;
         private static CreateNewEventWhenWaitEveryFor(name, groupName, active, condition, callback, waitTime, everyTime, everySpecificTime, condfreqTime);
-        static CreateEventWhenWaitEveryFor(name: string, groupName: string, active: boolean, condition: Function, callback: Function, waitTime: Time, everyTime: Time, everySpecificTime: Time, condfreqTime?: Time): void;
+        static CreateEventWhenWaitEveryFor(name: string, groupName: string, active: boolean, condition: Function, callback: Function, waitTime: number | Time, everyTime: number | Time, everySpecificTime: number | Time, condfreqTime?: number | Time): void;
         private static CreateNewEventWhenWaitEveryWhile(name, groupName, active, condition, callback, waitTime, everyTime, everyCondition, condfreqTime);
-        static CreateEventWhenWaitEveryWhile(name: string, groupName: string, active: boolean, condition: Function, callback: Function, waitTime: Time, everyTime: Time, everyCondition: Function, condfreqTime?: Time): void;
+        static CreateEventWhenWaitEveryWhile(name: string, groupName: string, active: boolean, condition: Function, callback: Function, waitTime: number | Time, everyTime: number | Time, everyCondition: Function, condfreqTime?: number | Time): void;
         /**
          * Create references for EnvironmentEvents:
          *      IReferenceSimple, IReferencesTotalHappens, IReferencesOneOrMoreHappens

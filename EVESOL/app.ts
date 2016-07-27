@@ -31,7 +31,7 @@ module EVENTSOL {
                         el.innerHTML = el.innerHTML + "<br/>" + "Smart garden changed value in detectDisease == true.";
                     }
                 },
-                new EVENTSOL.Time(2000)
+                EVENTSOL.Time.seconds(2)
             );
 
             EVENTSOL.EnvEventSys.CreateEventEvery(
@@ -43,7 +43,7 @@ module EVENTSOL {
                     el.innerHTML = el.innerHTML + "<br/>" + "Time of Exec: " + counter + " Process: garden fertilization.";
                     ++counter;
                 },
-                new EVENTSOL.Time(6000)
+                EVENTSOL.Time.seconds(6)
             );
 
             EVENTSOL.EnvEventSys.CreateEventWhen(
@@ -58,7 +58,7 @@ module EVENTSOL {
                     el.innerHTML = el.innerHTML + "<br/>" + "Time of Exec: " + counter + " Garden disease detected!";
                     ++counter;
                 },
-                new EVENTSOL.Time(4000)
+                EVENTSOL.Time.seconds(4)
             );
 
             EVENTSOL.EnvEventSys.CreateEventWhen(
@@ -75,7 +75,7 @@ module EVENTSOL {
                     sprayingCounter = 0;
                     SmartGarden.detectDisease = false;
                 },
-                new EVENTSOL.Time(2000)
+                EVENTSOL.Time.seconds(2)
             );
 
             /*            EVENTSOL.EnvEventSys.CreateEventEveryWhile(
@@ -103,8 +103,8 @@ module EVENTSOL {
                     ++sprayingCounter;
                     ++counter;
                 },
-                new EVENTSOL.Time(2000),
-                new EVENTSOL.Time(100000)
+                EVENTSOL.Time.seconds(2),
+                EVENTSOL.Time.seconds(10)
             );
 
             EVENTSOL.EnvEventSys.SetEventsTurnOnFromEnvironmentEvent(
@@ -136,25 +136,41 @@ module EVENTSOL {
             );
         }
 
+        testing_After_Recursive_Self_TurnOn() {
+            var group = 'MyProgram';
+            var SpecificDay = 'SpecificTime';
+
+            EVENTSOL.EnvEventSys.CreateGroup(group);
+
+            EVENTSOL.EnvEventSys.CreateEventAfter(
+                SpecificDay,
+                group,
+                true,
+                function () {
+                    var el = document.getElementById('content');
+                    el.innerHTML = el.innerHTML + "<br/>" + " Process: Specific Time.";
+                },
+                EVENTSOL.Time.seconds(5)
+            );
+
+            EVENTSOL.EnvEventSys.SetEventsTurnOnFromEnvironmentEvent(SpecificDay, group, [SpecificDay]);
+        }
 
         constructor(element: HTMLElement) {
             this.testing_Every_EveryFor_EveryWhile_WhenCondition_TurnOnOffs_OneGroup();
+            //this.testing_After_Recursive_Self_TurnOn();
         }
 
         start() {
             EVENTSOL.EnvEventSys.start();
         }
 
-        stop() {
-            clearTimeout(this.timerToken);
-        }
-
     }
 
     window.onload = () => {
         var el = document.getElementById('content');
-        var greeter = new TesterEVESOL(el);
-        greeter.start();
+        var tester = new TesterEVESOL(el);
+        tester.start();
     };
 
 

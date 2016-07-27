@@ -7,5 +7,5 @@ EVESOL.sln
 /EVESOL/EVENTSOL.csproj.user
 /EVESOL/bin/
 /EVESOL/obj/
-/EVESOL/**/*.js
-/EVESOL/**/*.js.map
+**.js
+**.js.map

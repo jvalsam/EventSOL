@@ -178,6 +178,7 @@ var EVENTSOL;
          *
          **/
         EnvEventSys.CreateGroup = function (name, active) {
+            if (active === void 0) { active = true; }
             var group = new EVENTSOL.GroupEnvironmentEvts(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE);
             EnvEventSys.getInstance().addEnvironmentGroup(group);
         };
@@ -191,19 +192,19 @@ var EVENTSOL;
          */
         EnvEventSys.CreateEventEvery = function (name, groupName, active, callback, freqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.TimerAction(freqTime, true));
+            evtActions.push(new EVENTSOL.TimerAction(typeof freqTime === 'number' ? new EVENTSOL.Time(freqTime) : freqTime, true));
             var timerEvt = new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.EVERY, true, callback, evtActions, groupName);
             EnvEventSys.getInstance().addEnvironmentEvt(timerEvt);
         };
         EnvEventSys.CreateEventEveryFor = function (name, groupName, active, callback, freqTime, time) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.TimerActionExpiresSpecificTime(freqTime, time));
+            evtActions.push(new EVENTSOL.TimerActionExpiresSpecificTime(typeof freqTime === 'number' ? new EVENTSOL.Time(freqTime) : freqTime, typeof time === 'number' ? new EVENTSOL.Time(time) : time));
             var timerEvt = new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.EVERY_FOR, true, callback, evtActions, groupName);
             EnvEventSys.getInstance().addEnvironmentEvt(timerEvt);
         };
         EnvEventSys.CreateEventEveryWhile = function (name, groupName, active, callback, freqTime, condition) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.TimerActionCondition(freqTime, condition));
+            evtActions.push(new EVENTSOL.TimerActionCondition(typeof freqTime === 'number' ? new EVENTSOL.Time(freqTime) : freqTime, condition));
             var timerEvt = new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.EVERY_WHILE, true, callback, evtActions, groupName);
             EnvEventSys.getInstance().addEnvironmentEvt(timerEvt);
         };
@@ -212,13 +213,13 @@ var EVENTSOL;
          */
         EnvEventSys.CreateEventOn = function (name, groupName, active, callback, time) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.TimerActionSpecificTime(time));
+            evtActions.push(new EVENTSOL.TimerActionSpecificTime(typeof time === 'number' ? new EVENTSOL.Time(time) : time));
             var timerEvt = new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.ΟΝ, false, callback, evtActions, groupName);
             EnvEventSys.getInstance().addEnvironmentEvt(timerEvt);
         };
         EnvEventSys.CreateEventAfter = function (name, groupName, active, callback, time) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.TimerAction(time, false));
+            evtActions.push(new EVENTSOL.TimerAction(typeof time === 'number' ? new EVENTSOL.Time(time) : time, false));
             var timerEvt = new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.AFTER, false, callback, evtActions, groupName);
             EnvEventSys.getInstance().addEnvironmentEvt(timerEvt);
         };
@@ -230,7 +231,7 @@ var EVENTSOL;
          */
         EnvEventSys.CreateNewEventWhenCondition = function (name, groupName, active, condition, callback, freqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtCondition(freqTime, condition));
+            evtActions.push(new EVENTSOL.EvtCondition(typeof freqTime === 'number' ? new EVENTSOL.Time(freqTime) : freqTime, condition));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION, false, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhen = function (name, groupName, active, condition, callback, freqTime) {
@@ -239,7 +240,7 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenConditionHappensFor = function (name, groupName, active, condition, callback, time, freqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtConditionTimer(freqTime, condition, time));
+            evtActions.push(new EVENTSOL.EvtConditionTimer(typeof freqTime === 'number' ? new EVENTSOL.Time(freqTime) : freqTime, condition, typeof time === 'number' ? new EVENTSOL.Time(time) : time));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_FOR, false, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenConditionHappensFor = function (name, groupName, active, condition, callback, time, freqTime) {
@@ -248,7 +249,7 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenConditionHappensTimes = function (name, groupName, active, condition, callback, times, freqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtConditionTimesHappens(freqTime, condition, times));
+            evtActions.push(new EVENTSOL.EvtConditionTimesHappens(typeof freqTime === 'number' ? new EVENTSOL.Time(freqTime) : freqTime, condition, times));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_HAPPENS, false, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenConditionHappensTimes = function (name, groupName, active, condition, callback, times, freqTime) {
@@ -257,8 +258,8 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenConditionEvery = function (name, groupName, active, condition, callback, everyTime, condfreqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtCondition(condfreqTime, condition));
-            evtActions.push(new EVENTSOL.TimerAction(everyTime, true));
+            evtActions.push(new EVENTSOL.EvtCondition(typeof condfreqTime === 'number' ? new EVENTSOL.Time(condfreqTime) : condfreqTime, condition));
+            evtActions.push(new EVENTSOL.TimerAction(typeof everyTime === 'number' ? new EVENTSOL.Time(everyTime) : everyTime, true));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_EVERY, true, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenEvery = function (name, groupName, active, condition, callback, everyTime, condfreqTime) {
@@ -267,8 +268,8 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenEveryFor = function (name, groupName, active, condition, callback, everyTime, specificTime, condfreqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtCondition(condfreqTime, condition));
-            evtActions.push(new EVENTSOL.TimerActionExpiresSpecificTime(everyTime, specificTime));
+            evtActions.push(new EVENTSOL.EvtCondition(typeof condfreqTime === 'number' ? new EVENTSOL.Time(condfreqTime) : condfreqTime, condition));
+            evtActions.push(new EVENTSOL.TimerActionExpiresSpecificTime(typeof everyTime === 'number' ? new EVENTSOL.Time(everyTime) : everyTime, typeof specificTime === 'number' ? new EVENTSOL.Time(specificTime) : specificTime));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_EVERY_FOR, true, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenEveryFor = function (name, groupName, active, condition, callback, everyTime, specificTime, condfreqTime) {
@@ -277,8 +278,8 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenEveryWhile = function (name, groupName, active, condition, callback, everyTime, everyCondition, condfreqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtCondition(condfreqTime, condition));
-            evtActions.push(new EVENTSOL.TimerActionCondition(everyTime, everyCondition));
+            evtActions.push(new EVENTSOL.EvtCondition(typeof condfreqTime === 'number' ? new EVENTSOL.Time(condfreqTime) : condfreqTime, condition));
+            evtActions.push(new EVENTSOL.TimerActionCondition(typeof everyTime === 'number' ? new EVENTSOL.Time(everyTime) : everyTime, everyCondition));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_EVERY_WHILE, true, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenEveryWhile = function (name, groupName, active, condition, callback, everyTime, everyCondition, condfreqTime) {
@@ -287,8 +288,8 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenWait = function (name, groupName, active, condition, callback, waitTime, condfreqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtCondition(condfreqTime, condition));
-            evtActions.push(new EVENTSOL.TimerAction(waitTime, false));
+            evtActions.push(new EVENTSOL.EvtCondition(typeof condfreqTime === 'number' ? new EVENTSOL.Time(condfreqTime) : condfreqTime, condition));
+            evtActions.push(new EVENTSOL.TimerAction(typeof waitTime === 'number' ? new EVENTSOL.Time(waitTime) : waitTime, false));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_WAIT, false, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenWait = function (name, groupName, active, condition, callback, waitTime, condfreqTime) {
@@ -297,9 +298,9 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenWaitEvery = function (name, groupName, active, condition, callback, waitTime, everyTime, condfreqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtCondition(condfreqTime, condition));
-            evtActions.push(new EVENTSOL.TimerAction(waitTime, false));
-            evtActions.push(new EVENTSOL.TimerAction(everyTime, true));
+            evtActions.push(new EVENTSOL.EvtCondition(typeof condfreqTime === 'number' ? new EVENTSOL.Time(condfreqTime) : condfreqTime, condition));
+            evtActions.push(new EVENTSOL.TimerAction(typeof waitTime === 'number' ? new EVENTSOL.Time(waitTime) : waitTime, false));
+            evtActions.push(new EVENTSOL.TimerAction(typeof everyTime === 'number' ? new EVENTSOL.Time(everyTime) : everyTime, true));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_WAIT_EVERY, true, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenWaitEvery = function (name, groupName, active, condition, callback, waitTime, everyTime, condfreqTime) {
@@ -308,9 +309,9 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenWaitEveryFor = function (name, groupName, active, condition, callback, waitTime, everyTime, everySpecificTime, condfreqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtCondition(condfreqTime, condition));
-            evtActions.push(new EVENTSOL.TimerAction(waitTime, false));
-            evtActions.push(new EVENTSOL.TimerActionExpiresSpecificTime(everyTime, everySpecificTime));
+            evtActions.push(new EVENTSOL.EvtCondition(typeof condfreqTime === 'number' ? new EVENTSOL.Time(condfreqTime) : condfreqTime, condition));
+            evtActions.push(new EVENTSOL.TimerAction(typeof waitTime === 'number' ? new EVENTSOL.Time(waitTime) : waitTime, false));
+            evtActions.push(new EVENTSOL.TimerActionExpiresSpecificTime(typeof everyTime === 'number' ? new EVENTSOL.Time(everyTime) : everyTime, typeof everySpecificTime === 'number' ? new EVENTSOL.Time(everySpecificTime) : everySpecificTime));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_WAIT_EVERY_FOR, true, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenWaitEveryFor = function (name, groupName, active, condition, callback, waitTime, everyTime, everySpecificTime, condfreqTime) {
@@ -319,9 +320,9 @@ var EVENTSOL;
         };
         EnvEventSys.CreateNewEventWhenWaitEveryWhile = function (name, groupName, active, condition, callback, waitTime, everyTime, everyCondition, condfreqTime) {
             var evtActions = new Array();
-            evtActions.push(new EVENTSOL.EvtCondition(condfreqTime, condition));
-            evtActions.push(new EVENTSOL.TimerAction(waitTime, false));
-            evtActions.push(new EVENTSOL.TimerActionCondition(everyTime, everyCondition));
+            evtActions.push(new EVENTSOL.EvtCondition(typeof condfreqTime === 'number' ? new EVENTSOL.Time(condfreqTime) : condfreqTime, condition));
+            evtActions.push(new EVENTSOL.TimerAction(typeof waitTime === 'number' ? new EVENTSOL.Time(waitTime) : waitTime, false));
+            evtActions.push(new EVENTSOL.TimerActionCondition(typeof everyTime === 'number' ? new EVENTSOL.Time(everyTime) : everyTime, everyCondition));
             return new EVENTSOL.TimerEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_CONDITION_WAIT_EVERY_WHILE, true, callback, evtActions, groupName);
         };
         EnvEventSys.CreateEventWhenWaitEveryWhile = function (name, groupName, active, condition, callback, waitTime, everyTime, everyCondition, condfreqTime) {
