@@ -131,6 +131,50 @@ var EVENTSOL;
         return ReferencedEvt;
     }(EVENTSOL.EnvironmentEvt));
     EVENTSOL.ReferencedEvt = ReferencedEvt;
+    var ReferencedEvtTimer = (function (_super) {
+        __extends(ReferencedEvtTimer, _super);
+        function ReferencedEvtTimer(name, status, type, isRepeatable, callback, reference, groupName, time, evtsTurnOn, groupsTurnOn, evtsTurnOff, groupsTurnOff) {
+            if (groupName === void 0) { groupName = null; }
+            if (evtsTurnOn === void 0) { evtsTurnOn = new Array(); }
+            if (groupsTurnOn === void 0) { groupsTurnOn = new Array(); }
+            if (evtsTurnOff === void 0) { evtsTurnOff = new Array(); }
+            if (groupsTurnOff === void 0) { groupsTurnOff = new Array(); }
+            _super.call(this, name, status, type, isRepeatable, callback, reference, groupName, 1, evtsTurnOn, groupsTurnOn, evtsTurnOff, groupsTurnOff);
+            var references = this._references;
+            this._actionReferenceCondTimer = new EVENTSOL.EvtReferenceTimer(this, function () { return references.actionsCheck(); }, EVENTSOL.Time.DefaultCondTime, time);
+            this._actionReferenceCondTimer.parent = this;
+        }
+        ReferencedEvtTimer.prototype.evtReferenceFired = function (evt) {
+            if (this.status === EVENTSOL.EnvironmentStatus.ENV_NOACTIVE) {
+                throw new RangeError("Error: EnvironmentEvt called " + evt.name +
+                    " try to call evtReferencedFired of RefEvt called " + this.name);
+            }
+            this._references.markEvtReferenceFired(evt.name);
+            // check if referenced event fired due to the evt
+            if (this._totalTimes === 0 && this._references.actionsCheck()) {
+                ++this._totalTimes;
+                this._actionReferenceCondTimer.start(true);
+            }
+        };
+        ReferencedEvtTimer.prototype.actionFired = function (result) {
+            if (result === true) {
+                this.execution();
+                // executed once by default and then turns off
+                this.turnEvtOFF();
+                this.actionsAfterExecution();
+            }
+            else {
+                this._totalTimes = 0;
+                this._actionReferenceCondTimer.stop();
+            }
+        };
+        ReferencedEvtTimer.prototype.turnEvtOFF = function () {
+            _super.prototype.turnEvtOFF.call(this);
+            this._actionReferenceCondTimer.stop();
+        };
+        return ReferencedEvtTimer;
+    }(ReferencedEvt));
+    EVENTSOL.ReferencedEvtTimer = ReferencedEvtTimer;
     // Tree of References
     // -> Simple Ref (Tree leafs), Aggregate Ref (And Ref, Or Ref)
     var Reference = (function () {

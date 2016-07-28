@@ -208,7 +208,7 @@ module EVENTSOL {
                 true,
                 function () {
                     var el = document.getElementById('content');
-                    el.innerHTML = el.innerHTML + "<br/>" + " --> SmartGarden detects that stoped rain";
+                    el.innerHTML = el.innerHTML + "<br/>" + " --> SmartGarden detects that rain stopped";
                     SmartGarden.stopRains = true;
                 },
                 EVENTSOL.Time.seconds(10)
@@ -243,9 +243,9 @@ module EVENTSOL {
         }
 
         constructor(element: HTMLElement) {
-            // this.testing_Every_EveryFor_EveryWhile_WhenCondition_ReferenceEvents_TurnOnOffs_OneGroup();
+            this.testing_Every_EveryFor_EveryWhile_WhenCondition_ReferenceEvents_TurnOnOffs_OneGroup();
             // this.testing_After_Recursive_Self_TurnOn();
-            this.testing_When_Every();
+            // this.testing_When_Every();
         }
 
         start() {

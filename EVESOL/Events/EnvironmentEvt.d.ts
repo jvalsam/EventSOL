@@ -23,6 +23,7 @@ declare module EVENTSOL {
         WHEN_CONDITION_WAIT_EVERY_WHILE = 14,
         WHEN_REFERENCE = 15,
         WHEN_REFERENCE_HAPPENS = 16,
+        WHEN_REFERENCE_FOR = 17,
     }
     /**
      *  All event names are valid to be defined by the lib user, except all starts with $.
@@ -61,6 +62,7 @@ declare module EVENTSOL {
         groupsTurnOn: Array<string>;
         evtsTurnOff: Array<string>;
         groupsTurnOff: Array<string>;
+        callback: Function;
         execution(): void;
         /**
          * Care for activations/deactivations events and groups

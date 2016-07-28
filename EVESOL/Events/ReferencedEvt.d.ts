@@ -27,9 +27,9 @@ declare module EVENTSOL {
         references: Array<IReference>;
     }
     class ReferencedEvt extends EnvironmentEvt {
-        private _references;
-        private _times;
-        private _totalTimes;
+        protected _references: Reference;
+        protected _times: number;
+        protected _totalTimes: number;
         constructor(name: string, status: EnvironmentStatus, type: EnvironmentEvtType, isRepeatable: boolean, callback: Function, reference: IReference, groupName?: string, times?: number, evtsTurnOn?: Array<string>, groupsTurnOn?: Array<string>, evtsTurnOff?: Array<string>, groupsTurnOff?: Array<string>);
         private registrationEvtSys(action);
         registerEvtSys(): void;
@@ -37,6 +37,13 @@ declare module EVENTSOL {
         evtReferenceFired(evt: EnvironmentEvt): void;
         private turnEvtHelper(turnFunc);
         turnEvtON(): void;
+        turnEvtOFF(): void;
+    }
+    class ReferencedEvtTimer extends ReferencedEvt {
+        private _actionReferenceCondTimer;
+        constructor(name: string, status: EnvironmentStatus, type: EnvironmentEvtType, isRepeatable: boolean, callback: Function, reference: IReference, groupName: string, time: Time, evtsTurnOn?: Array<string>, groupsTurnOn?: Array<string>, evtsTurnOff?: Array<string>, groupsTurnOff?: Array<string>);
+        evtReferenceFired(evt: EnvironmentEvt): void;
+        actionFired(result: boolean): void;
         turnEvtOFF(): void;
     }
     abstract class Reference {

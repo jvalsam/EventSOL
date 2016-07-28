@@ -96,6 +96,7 @@ declare module EVENTSOL {
          */
         static CreateEventWhenReference(name: string, groupName: string, active: boolean, reference: IReference, callback: Function): void;
         static CreateEventWhenReferenceHappens(name: string, groupName: string, active: boolean, reference: IReference, callback: Function, times: number): void;
+        static CreateEventWhenReferenceFor(name: string, groupName: string, active: boolean, reference: IReference, callback: Function, periodConditionIsTrue: Time): void;
         /**
          *  Start: Helper methods for insertion of the turn ON/OFF events / groups in the end of fired event source code execution
          */

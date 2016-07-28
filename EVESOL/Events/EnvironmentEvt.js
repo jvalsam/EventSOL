@@ -27,14 +27,8 @@ var EVENTSOL;
         EnvironmentEvtType[EnvironmentEvtType["WHEN_CONDITION_WAIT_EVERY_WHILE"] = 14] = "WHEN_CONDITION_WAIT_EVERY_WHILE";
         //
         EnvironmentEvtType[EnvironmentEvtType["WHEN_REFERENCE"] = 15] = "WHEN_REFERENCE";
-        EnvironmentEvtType[EnvironmentEvtType["WHEN_REFERENCE_HAPPENS"] = 16] = "WHEN_REFERENCE_HAPPENS"; /*,
-        WHEN_REFERENCE_EVERY,
-        WHEN_REFERENCE_EVERY_FOR,
-        WHEN_REFERENCE_EVERY_WHILE,
-        WHEN_REFERENCE_WAIT,
-        WHEN_REFERENCE_WAIT_EVERY,
-        WHEN_REFERENCE_WAIT_EVERY_FOR,
-        WHEN_REFERENCE_WAIT_EVERY_WHILE*/
+        EnvironmentEvtType[EnvironmentEvtType["WHEN_REFERENCE_HAPPENS"] = 16] = "WHEN_REFERENCE_HAPPENS";
+        EnvironmentEvtType[EnvironmentEvtType["WHEN_REFERENCE_FOR"] = 17] = "WHEN_REFERENCE_FOR";
     })(EVENTSOL.EnvironmentEvtType || (EVENTSOL.EnvironmentEvtType = {}));
     var EnvironmentEvtType = EVENTSOL.EnvironmentEvtType;
     var EnvironmentEvtMap = {};
@@ -157,6 +151,11 @@ var EVENTSOL;
         Object.defineProperty(EnvironmentEvt.prototype, "groupsTurnOff", {
             get: function () { return this._groupsTurnOff; },
             set: function (groups) { this._groupsTurnOff = groups; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvironmentEvt.prototype, "callback", {
+            get: function () { return this._callbackFunc; },
             enumerable: true,
             configurable: true
         });

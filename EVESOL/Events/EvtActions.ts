@@ -2,19 +2,17 @@
 
     var totalEvtActions = 0;
 
-    export abstract class EvtAction {
-        protected _parent: TimerEvt;
+    export abstract class EvtSysAction {
         protected _id: number;
 
         protected _activationTime: Time;
 
-        constructor(time:Time) {
+        constructor(time: Time) {
             this._id = ++totalEvtActions;
             this._activationTime = time;
-            this._parent = null; // parent populates itself on construction
         }
-        
-        start(forRegistration: boolean =false): void {
+
+        start(forRegistration: boolean = false): void {
             TimerSys.getInstance().insertAction(this, forRegistration);
         }
 
@@ -24,12 +22,22 @@
 
         // Checks if event action is fired, in case call function execution of the environment event
         abstract fireAction(): void;
-        
-        get parent(): TimerEvt { return this._parent; }
-        set parent(ee: TimerEvt) { this._parent = ee; }
 
         get id(): number { return this._id; }
         get time(): Time { return this._activationTime; }
+    }
+
+    export abstract class EvtAction extends EvtSysAction {
+        protected _parent: TimerEvt;
+
+        constructor(time: Time) {
+            super(time);
+            this._parent = null; // parent populates itself on construction
+        }
+        
+        get parent(): TimerEvt { return this._parent; }
+        set parent(ee: TimerEvt) { this._parent = ee; }
+        
     }
 
     /**
@@ -227,5 +235,57 @@
                 this._parent.actionFired(this._id, true/*unused*/, true);
             }
         }
+    }
+
+    /**
+     *  Timer Action for Referenced Event
+     */
+
+    export class EvtReferenceTimer extends EvtSysAction {
+        private _parent: ReferencedEvtTimer;
+
+        private _condition: Function;
+        private _conditionTime: Time;
+        private _timer: Time;
+
+        constructor(
+            parent: ReferencedEvtTimer,
+            condition: Function,
+            conditionTime: Time,
+            freqTime: Time = Time.DefaultCondTime
+        ) {
+            super(freqTime);
+
+            this._parent = parent;
+            this._condition = condition;
+            this._conditionTime = conditionTime;
+        }
+
+        start(forRegistration: boolean = false): void {
+            super.start(true);
+            this._timer = new Time();
+        }
+
+        fireAction(): void {
+            var conditionResult: boolean = this._condition();
+            var currentTime: number = Time.now();
+
+            if (conditionResult === true) {
+                // first condition true, timer is 0
+                if (this._timer.value === 0) {
+                    this._timer.value = currentTime;
+                }
+                // time that condition happens is completed -> event fire
+                else if (currentTime - this._timer.value >= this._conditionTime.value) {
+                    this._parent.actionFired(true);
+                }
+            }
+            else {
+                this._parent.actionFired(false);
+            }
+        }
+
+        get parent(): ReferencedEvtTimer { return this._parent; }
+        set parent(parent: ReferencedEvtTimer) { this._parent = parent; }
     }
 }

@@ -29,14 +29,8 @@
         WHEN_CONDITION_WAIT_EVERY_WHILE,
         //
         WHEN_REFERENCE,
-        WHEN_REFERENCE_HAPPENS/*,
-        WHEN_REFERENCE_EVERY,
-        WHEN_REFERENCE_EVERY_FOR,
-        WHEN_REFERENCE_EVERY_WHILE,
-        WHEN_REFERENCE_WAIT,
-        WHEN_REFERENCE_WAIT_EVERY,
-        WHEN_REFERENCE_WAIT_EVERY_FOR,
-        WHEN_REFERENCE_WAIT_EVERY_WHILE*/
+        WHEN_REFERENCE_HAPPENS,
+        WHEN_REFERENCE_FOR
     }
 
     var EnvironmentEvtMap = {};
@@ -165,6 +159,8 @@
 
         get groupsTurnOff(): Array<string> { return this._groupsTurnOff; }
         set groupsTurnOff(groups: Array<string>) { this._groupsTurnOff = groups; }
+
+        get callback(): Function { return this._callbackFunc; }
         
         execution(): void {
             // exec the defined callback source code 

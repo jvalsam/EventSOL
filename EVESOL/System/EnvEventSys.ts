@@ -1017,6 +1017,27 @@
             EnvEventSys.getInstance().addEnvironmentEvt(referencedEvt);
         }
 
+        public static CreateEventWhenReferenceFor(
+            name: string,
+            groupName: string,
+            active: boolean,
+            reference: IReference,
+            callback: Function,
+            periodConditionIsTrue: Time
+        ) {
+            var referencedEvt: ReferencedEvt = new ReferencedEvtTimer(
+                name,
+                active ? EnvironmentStatus.ENV_ACTIVE : EnvironmentStatus.ENV_NOACTIVE,
+                EnvironmentEvtType.WHEN_REFERENCE_FOR,
+                false,
+                callback,
+                reference,
+                groupName,
+                periodConditionIsTrue
+            );
+
+            EnvEventSys.getInstance().addEnvironmentEvt(referencedEvt);
+        }
 
         /**
          *  Start: Helper methods for insertion of the turn ON/OFF events / groups in the end of fired event source code execution  

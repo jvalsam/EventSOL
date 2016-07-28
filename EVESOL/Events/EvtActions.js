@@ -6,37 +6,45 @@ var __extends = (this && this.__extends) || function (d, b) {
 var EVENTSOL;
 (function (EVENTSOL) {
     var totalEvtActions = 0;
-    var EvtAction = (function () {
-        function EvtAction(time) {
+    var EvtSysAction = (function () {
+        function EvtSysAction(time) {
             this._id = ++totalEvtActions;
             this._activationTime = time;
-            this._parent = null; // parent populates itself on construction
         }
-        EvtAction.prototype.start = function (forRegistration) {
+        EvtSysAction.prototype.start = function (forRegistration) {
             if (forRegistration === void 0) { forRegistration = false; }
             EVENTSOL.TimerSys.getInstance().insertAction(this, forRegistration);
         };
-        EvtAction.prototype.stop = function () {
+        EvtSysAction.prototype.stop = function () {
             EVENTSOL.TimerSys.getInstance().removeAction(this);
         };
+        Object.defineProperty(EvtSysAction.prototype, "id", {
+            get: function () { return this._id; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EvtSysAction.prototype, "time", {
+            get: function () { return this._activationTime; },
+            enumerable: true,
+            configurable: true
+        });
+        return EvtSysAction;
+    }());
+    EVENTSOL.EvtSysAction = EvtSysAction;
+    var EvtAction = (function (_super) {
+        __extends(EvtAction, _super);
+        function EvtAction(time) {
+            _super.call(this, time);
+            this._parent = null; // parent populates itself on construction
+        }
         Object.defineProperty(EvtAction.prototype, "parent", {
             get: function () { return this._parent; },
             set: function (ee) { this._parent = ee; },
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(EvtAction.prototype, "id", {
-            get: function () { return this._id; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(EvtAction.prototype, "time", {
-            get: function () { return this._activationTime; },
-            enumerable: true,
-            configurable: true
-        });
         return EvtAction;
-    }());
+    }(EvtSysAction));
     EVENTSOL.EvtAction = EvtAction;
     /**
      * Creates expressions that include Every, OnTime, Wait
@@ -217,5 +225,47 @@ var EVENTSOL;
         return TimerActionExpiresSpecificTime;
     }(TimerAction));
     EVENTSOL.TimerActionExpiresSpecificTime = TimerActionExpiresSpecificTime;
+    /**
+     *  Timer Action for Referenced Event
+     */
+    var EvtReferenceTimer = (function (_super) {
+        __extends(EvtReferenceTimer, _super);
+        function EvtReferenceTimer(parent, condition, conditionTime, freqTime) {
+            if (freqTime === void 0) { freqTime = EVENTSOL.Time.DefaultCondTime; }
+            _super.call(this, freqTime);
+            this._parent = parent;
+            this._condition = condition;
+            this._conditionTime = conditionTime;
+        }
+        EvtReferenceTimer.prototype.start = function (forRegistration) {
+            if (forRegistration === void 0) { forRegistration = false; }
+            _super.prototype.start.call(this, true);
+            this._timer = new EVENTSOL.Time();
+        };
+        EvtReferenceTimer.prototype.fireAction = function () {
+            var conditionResult = this._condition();
+            var currentTime = EVENTSOL.Time.now();
+            if (conditionResult === true) {
+                // first condition true, timer is 0
+                if (this._timer.value === 0) {
+                    this._timer.value = currentTime;
+                }
+                else if (currentTime - this._timer.value >= this._conditionTime.value) {
+                    this._parent.actionFired(true);
+                }
+            }
+            else {
+                this._parent.actionFired(false);
+            }
+        };
+        Object.defineProperty(EvtReferenceTimer.prototype, "parent", {
+            get: function () { return this._parent; },
+            set: function (parent) { this._parent = parent; },
+            enumerable: true,
+            configurable: true
+        });
+        return EvtReferenceTimer;
+    }(EvtSysAction));
+    EVENTSOL.EvtReferenceTimer = EvtReferenceTimer;
 })(EVENTSOL || (EVENTSOL = {}));
 //# sourceMappingURL=EvtActions.js.map

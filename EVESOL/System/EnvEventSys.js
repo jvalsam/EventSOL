@@ -369,6 +369,10 @@ var EVENTSOL;
             var referencedEvt = new EVENTSOL.ReferencedEvt(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_REFERENCE_HAPPENS, false, callback, reference, groupName, times);
             EnvEventSys.getInstance().addEnvironmentEvt(referencedEvt);
         };
+        EnvEventSys.CreateEventWhenReferenceFor = function (name, groupName, active, reference, callback, periodConditionIsTrue) {
+            var referencedEvt = new EVENTSOL.ReferencedEvtTimer(name, active ? EVENTSOL.EnvironmentStatus.ENV_ACTIVE : EVENTSOL.EnvironmentStatus.ENV_NOACTIVE, EVENTSOL.EnvironmentEvtType.WHEN_REFERENCE_FOR, false, callback, reference, groupName, periodConditionIsTrue);
+            EnvEventSys.getInstance().addEnvironmentEvt(referencedEvt);
+        };
         /**
          *  Start: Helper methods for insertion of the turn ON/OFF events / groups in the end of fired event source code execution
          */

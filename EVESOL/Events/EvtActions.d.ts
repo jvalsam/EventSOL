@@ -1,15 +1,18 @@
 declare module EVENTSOL {
-    abstract class EvtAction {
-        protected _parent: TimerEvt;
+    abstract class EvtSysAction {
         protected _id: number;
         protected _activationTime: Time;
         constructor(time: Time);
         start(forRegistration?: boolean): void;
         stop(): void;
         abstract fireAction(): void;
-        parent: TimerEvt;
         id: number;
         time: Time;
+    }
+    abstract class EvtAction extends EvtSysAction {
+        protected _parent: TimerEvt;
+        constructor(time: Time);
+        parent: TimerEvt;
     }
     /**
      * Creates expressions that include Every, OnTime, Wait
@@ -64,5 +67,18 @@ declare module EVENTSOL {
         constructor(time: Time, specificTime: Time);
         start(forRegistration?: boolean): void;
         fireAction(): void;
+    }
+    /**
+     *  Timer Action for Referenced Event
+     */
+    class EvtReferenceTimer extends EvtSysAction {
+        private _parent;
+        private _condition;
+        private _conditionTime;
+        private _timer;
+        constructor(parent: ReferencedEvtTimer, condition: Function, conditionTime: Time, freqTime?: Time);
+        start(forRegistration?: boolean): void;
+        fireAction(): void;
+        parent: ReferencedEvtTimer;
     }
 }

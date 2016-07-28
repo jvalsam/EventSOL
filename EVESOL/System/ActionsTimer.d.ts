@@ -6,8 +6,8 @@ declare module EVENTSOL {
         private _runtimeIntervalsMap;
         constructor();
         static getInstance(): TimerSys;
-        insertAction(action: EvtAction, registration: boolean): void;
-        removeAction(action: EvtAction): boolean;
+        insertAction(action: EvtSysAction, registration: boolean): void;
+        removeAction(action: EvtSysAction): boolean;
         start(): void;
         stop(): void;
         private actionsCheck(keyTime);

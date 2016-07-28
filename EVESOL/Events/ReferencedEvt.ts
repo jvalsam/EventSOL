@@ -36,9 +36,9 @@
     ////////////////////////////////////////////////////
     
     export class ReferencedEvt extends EnvironmentEvt {
-        private _references: Reference;
-        private _times: number;
-        private _totalTimes: number;
+        protected _references: Reference;
+        protected _times: number;
+        protected _totalTimes: number;
 
         constructor(
             name: string,
@@ -136,7 +136,7 @@
             }
 
             this._references.markEvtReferenceFired(evt.name);
-                
+            
             // check if referenced event fired due to the evt
             if (this._references.actionsCheck()) {
                 ++this._totalTimes;
@@ -180,7 +180,6 @@
 
         // remove event data from the respective events
         turnEvtOFF(): void {
-
             super.turnEvtOFF();
             this.turnEvtHelper('removeCitation');
             this._totalTimes = 0;
@@ -188,6 +187,85 @@
         }
     }
 
+    export class ReferencedEvtTimer extends ReferencedEvt {
+        private _actionReferenceCondTimer: EvtReferenceTimer;
+
+        constructor(
+            name: string,
+            status: EnvironmentStatus,
+            type: EnvironmentEvtType,
+            isRepeatable: boolean,
+            callback: Function,
+            reference: IReference,
+            groupName: string = null,
+            time: Time,
+            evtsTurnOn: Array<string> = new Array<string>(),
+            groupsTurnOn: Array<string> = new Array<string>(),
+            evtsTurnOff: Array<string> = new Array<string>(),
+            groupsTurnOff: Array<string> = new Array<string>()
+        ) {
+            super(
+                name,
+                status,
+                type,
+                isRepeatable,
+                callback,
+                reference,
+                groupName,
+                1,
+                evtsTurnOn,
+                groupsTurnOn,
+                evtsTurnOff,
+                groupsTurnOff
+            );
+
+            var references: Reference = this._references;
+
+            this._actionReferenceCondTimer = new EvtReferenceTimer(
+                this,
+                function () { return references.actionsCheck(); },
+                Time.DefaultCondTime,
+                time
+            );
+            this._actionReferenceCondTimer.parent = this;
+        }
+
+        evtReferenceFired(evt: EnvironmentEvt) {
+            if (this.status === EnvironmentStatus.ENV_NOACTIVE) {
+                throw new RangeError(
+                    "Error: EnvironmentEvt called " + evt.name +
+                    " try to call evtReferencedFired of RefEvt called " + this.name
+                );
+            }
+
+            this._references.markEvtReferenceFired(evt.name);
+
+            // check if referenced event fired due to the evt
+            if (this._totalTimes === 0 && this._references.actionsCheck()) {
+                ++this._totalTimes;
+                this._actionReferenceCondTimer.start(true);
+            }
+        }
+
+        actionFired(result: boolean) {
+            if (result === true) {
+                this.execution();
+                // executed once by default and then turns off
+                this.turnEvtOFF();
+                this.actionsAfterExecution();
+            }
+            else {
+                this._totalTimes = 0;
+                this._actionReferenceCondTimer.stop();
+            }
+        }
+
+        turnEvtOFF(): void {
+            super.turnEvtOFF();
+            this._actionReferenceCondTimer.stop();
+        }
+    }
+    
     // Tree of References
     // -> Simple Ref (Tree leafs), Aggregate Ref (And Ref, Or Ref)
 

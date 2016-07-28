@@ -4,7 +4,7 @@
 
     class TimeActions {
         private _timeoutID: number;
-        private _actionsMap: {[actionId: number]: EvtAction};
+        private _actionsMap: {[actionId: number]: EvtSysAction};
         
         constructor() {
             this._timeoutID = 0;
@@ -13,14 +13,14 @@
 
         get timeoutID(): number { return this._timeoutID; }
         set timeoutID(timeoutID: number) { this._timeoutID = timeoutID; }
-        get actionsMap(): { [actionId: number]: EvtAction } { return this._actionsMap; }
-        set actionsMap(map: { [actionId: number]: EvtAction }) { this._actionsMap = map; }
+        get actionsMap(): { [actionId: number]: EvtSysAction } { return this._actionsMap; }
+        set actionsMap(map: { [actionId: number]: EvtSysAction }) { this._actionsMap = map; }
 
         // functions handle data of the map...
         // insert actions remove actions
         // check if map is empty ,  etc
 
-        insert(action: EvtAction) {
+        insert(action: EvtSysAction) {
             if (typeof this._actionsMap === 'undefined') {
                 this._actionsMap = {};
             }
@@ -43,14 +43,14 @@
     // Use for runtime
     class TimeAction {
         private _timeoutID: number;
-        private _action: EvtAction;
+        private _action: EvtSysAction;
 
-        constructor(action: EvtAction) {
+        constructor(action: EvtSysAction) {
             this._timeoutID = 0;
             this._action = action;
         }
 
-        get action(): EvtAction { return this._action; }
+        get action(): EvtSysAction { return this._action; }
 
         get timeoutID(): number { return this._timeoutID; }
         set timeoutID(timeoutID: number) { this._timeoutID = timeoutID; }
@@ -82,7 +82,7 @@
             return TimerSys._inst;
         }
         
-        insertAction(action: EvtAction, registration: boolean) {
+        insertAction(action: EvtSysAction, registration: boolean) {
             var actionTime = action.time.value;
 
             if (registration) {
@@ -105,7 +105,7 @@
             }
         }
 
-        removeAction(action: EvtAction): boolean {
+        removeAction(action: EvtSysAction): boolean {
             // actions that have been added runtime
             if (action.id in this._runtimeIntervalsMap) {
                 clearInterval(this._runtimeIntervalsMap[action.id].timeoutID);
@@ -148,7 +148,7 @@
                 }
                 // clear runtime inserted actions, and remove them from runtime and register them in _timesMap
                 for (var actionId in this._runtimeIntervalsMap) {
-                    let action: EvtAction = this._runtimeIntervalsMap[actionId].action;
+                    let action: EvtSysAction = this._runtimeIntervalsMap[actionId].action;
                     // move action from runtime to registration time
                     this.removeAction(action);
                     this.insertAction(this._runtimeIntervalsMap[actionId].action, true);
