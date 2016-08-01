@@ -111,5 +111,9 @@ declare module EVENTSOL {
         static SetEventsTurnOffFromEnvironmentEvent(evtName: string, groupName: any, events: Array<string>): void;
         static SetGroupsTurnOnFromEnvironmentEvent(evtName: string, groupName: any, groups: Array<string>): void;
         static SetGroupsTurnOffFromEnvironmentEvent(evtName: string, groupName: any, groups: Array<string>): void;
+        static TurnOnEvent(evtName: string, groupName: string): void;
+        static TurnOffEvent(evtName: string, groupName: string): void;
+        static TurnOnGroup(groupName: string): void;
+        static TurnOffGroup(groupName: string): void;
     }
 }

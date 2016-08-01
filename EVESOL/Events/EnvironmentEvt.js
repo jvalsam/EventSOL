@@ -28,7 +28,7 @@ var EVENTSOL;
         //
         EnvironmentEvtType[EnvironmentEvtType["WHEN_REFERENCE"] = 15] = "WHEN_REFERENCE";
         EnvironmentEvtType[EnvironmentEvtType["WHEN_REFERENCE_HAPPENS"] = 16] = "WHEN_REFERENCE_HAPPENS";
-        EnvironmentEvtType[EnvironmentEvtType["WHEN_REFERENCE_FOR"] = 17] = "WHEN_REFERENCE_FOR";
+        EnvironmentEvtType[EnvironmentEvtType["WHEN_REFERENCE_FOR"] = 17] = "WHEN_REFERENCE_FOR"; // CHECKED
     })(EVENTSOL.EnvironmentEvtType || (EVENTSOL.EnvironmentEvtType = {}));
     var EnvironmentEvtType = EVENTSOL.EnvironmentEvtType;
     var EnvironmentEvtMap = {};

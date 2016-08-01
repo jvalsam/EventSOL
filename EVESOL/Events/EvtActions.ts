@@ -174,6 +174,7 @@
         stop(): void {
             super.stop();
             this._prvCondResult = false;
+            this._timesCounter = 0;
         }
 
         fireAction(): void {

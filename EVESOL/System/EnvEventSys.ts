@@ -1141,6 +1141,27 @@
                 EnvEventSys.addValidGroupsForSelfReference(envEvt, groups, 'TurnOff');
             }
         }
+
+        public static TurnOnEvent(evtName: string, groupName: string) {
+            var evt: EnvironmentEvt = EnvEventSys.getInstance().getEnvironmentEvt(groupName, evtName);
+            evt.turnEvtON();
+        }
+
+        public static TurnOffEvent(evtName: string, groupName: string) {
+            var evt: EnvironmentEvt = EnvEventSys.getInstance().getEnvironmentEvt(groupName, evtName);
+            evt.turnEvtOFF();
+        }
+        
+        public static TurnOnGroup(groupName: string) {
+            var group: GroupEnvironmentEvts = EnvEventSys.getInstance().getGroupEnvironmentEvts(groupName);
+            group.turnGroupOn();
+        }
+
+        public static TurnOffGroup(groupName: string) {
+            var group: GroupEnvironmentEvts = EnvEventSys.getInstance().getGroupEnvironmentEvts(groupName);
+            group.turnGroupOff();
+        }
+        
     }
 
 }

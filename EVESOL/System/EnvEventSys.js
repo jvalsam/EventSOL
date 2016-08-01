@@ -461,6 +461,22 @@ var EVENTSOL;
                 EnvEventSys.addValidGroupsForSelfReference(envEvt, groups, 'TurnOff');
             }
         };
+        EnvEventSys.TurnOnEvent = function (evtName, groupName) {
+            var evt = EnvEventSys.getInstance().getEnvironmentEvt(groupName, evtName);
+            evt.turnEvtON();
+        };
+        EnvEventSys.TurnOffEvent = function (evtName, groupName) {
+            var evt = EnvEventSys.getInstance().getEnvironmentEvt(groupName, evtName);
+            evt.turnEvtOFF();
+        };
+        EnvEventSys.TurnOnGroup = function (groupName) {
+            var group = EnvEventSys.getInstance().getGroupEnvironmentEvts(groupName);
+            group.turnGroupOn();
+        };
+        EnvEventSys.TurnOffGroup = function (groupName) {
+            var group = EnvEventSys.getInstance().getGroupEnvironmentEvts(groupName);
+            group.turnGroupOff();
+        };
         EnvEventSys._inst = new EnvEventSys();
         return EnvEventSys;
     }());

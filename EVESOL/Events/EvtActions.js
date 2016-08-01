@@ -169,6 +169,7 @@ var EVENTSOL;
         EvtConditionTimesHappens.prototype.stop = function () {
             _super.prototype.stop.call(this);
             this._prvCondResult = false;
+            this._timesCounter = 0;
         };
         EvtConditionTimesHappens.prototype.fireAction = function () {
             var conditionResult = this._condition();

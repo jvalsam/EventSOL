@@ -10,27 +10,27 @@
     }
 
     export enum EnvironmentEvtType {
-        EVERY,
-        EVERY_FOR,
-        EVERY_WHILE,
+        EVERY,                              // CHECKED
+        EVERY_FOR,                          // CHECKED
+        EVERY_WHILE,                        // CHECKED
         //
-        ΟΝ,
-        AFTER,
+        ΟΝ,                                 // TODO: CALC SPECIFIC TIME
+        AFTER,                              // CHECKED
         //
-        WHEN_CONDITION,
-        WHEN_CONDITION_FOR,
-        WHEN_CONDITION_HAPPENS,
-        WHEN_CONDITION_EVERY,
-        WHEN_CONDITION_EVERY_FOR,
-        WHEN_CONDITION_EVERY_WHILE,
-        WHEN_CONDITION_WAIT,
-        WHEN_CONDITION_WAIT_EVERY,
-        WHEN_CONDITION_WAIT_EVERY_FOR,
-        WHEN_CONDITION_WAIT_EVERY_WHILE,
+        WHEN_CONDITION,                     // CHECKED
+        WHEN_CONDITION_FOR,                 // CHECKED
+        WHEN_CONDITION_HAPPENS,             // CHECKED
+        WHEN_CONDITION_EVERY,               // CHECKED
+        WHEN_CONDITION_EVERY_FOR,           // CHECKED
+        WHEN_CONDITION_EVERY_WHILE,         // CHECKED
+        WHEN_CONDITION_WAIT,                // CHECKED
+        WHEN_CONDITION_WAIT_EVERY,          // CHECKED
+        WHEN_CONDITION_WAIT_EVERY_FOR,      // CHECKED
+        WHEN_CONDITION_WAIT_EVERY_WHILE,    // CHECKED
         //
-        WHEN_REFERENCE,
-        WHEN_REFERENCE_HAPPENS,
-        WHEN_REFERENCE_FOR
+        WHEN_REFERENCE,                     // CHECKED
+        WHEN_REFERENCE_HAPPENS,             // CHECKED
+        WHEN_REFERENCE_FOR                  // CHECKED
     }
 
     var EnvironmentEvtMap = {};
